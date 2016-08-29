@@ -1,0 +1,8 @@
+# OSX bs
+.DS_Store
+
+# Static artifacts
+/node_modules
+
+# Since we are building assets from src,
+/build
