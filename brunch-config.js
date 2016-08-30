@@ -29,6 +29,15 @@ exports.config = {
       options: {
         includePaths: ['node_modules'],
       },
+    },
+    postcss: {
+      processors: [ require('autoprefixer')(["last 2 version", "> 1%"]) ]
+    },
+    autoReload: {
+      match: {
+        stylesheets: ['*.scss', '*.css', '*.jpg', '*.png'],
+        javascripts: ['*.js']
+      }
     }
   },
 

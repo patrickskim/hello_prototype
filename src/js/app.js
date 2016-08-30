@@ -5,7 +5,6 @@ window.Lixir = {
   'App': {
     run() {
       console.log('Hello!');
-      console.log("init works!", _ );
     }
   }
 };
@@ -15,5 +14,10 @@ window.onload = function() {
 };
 
 $(document).ready(function() {
-    console.log("ready!");
+  console.log("ready!");
+});
+
+// Mock behaviors here
+$(".ChatPanels").on("click", function() {
+  $(this).toggleClass("js_move")
 });

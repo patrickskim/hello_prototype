@@ -13,4 +13,39 @@
   "global/layout",
   "global/skin",
   "global/typography",
-  "modules/modules";
+  "modules/modules",
+
+  "app/vars",
+  "app/base",
+
+  "shame";
+
+// WORK FLOW ADD STUFF HERE then add to modules.
+
+.Channels {
+  position: relative;
+  padding: $padding;
+  background: orange;
+
+  height: $body_h;
+}
+
+.ChatPanels {
+  $w: 240px;
+
+  position: absolute;
+  top: 0; right: 0;
+
+  // min-width: 240px;
+  // width: 75%;
+  // max-width: 260px;
+  width: $w;
+  height: $body_h;
+  padding: $padding;
+
+  background: #fff;
+
+  &.js_move {
+    right: $w;
+  }
+}
