@@ -1,0 +1,20 @@
+.ChatPanels {
+  $w: 140px;
+
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  min-width: 210px;
+  width: 80%;
+  max-width: 260px;
+  height: $body_h;
+  padding: $padding;
+
+  background: #fff;
+  transition: transform 400ms cubic-bezier(0.215, 0.61, 0.355, 1);
+
+  &.js_move {
+    transform: translateX(60%);
+  }
+}

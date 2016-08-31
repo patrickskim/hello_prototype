@@ -1,0 +1,46 @@
+body {
+  background: $body_bg;
+  font-family: "Proxima", "Helvetica", "Arial", sans-serif;
+}
+
+#MainContainer {
+  @include outer-container;
+
+  $p: 10px;
+
+  min-width: (1024px - $p*2) - 4; // 1024 - 10 fuck 4 pixels...
+  max-width: 1280px - $p*2; // 1280 - 20
+  padding: 0 $p;
+
+  background: #dce3ea;
+}
+
+.MainHeader {
+  padding: 15px;
+}
+
+.MainBody {
+  @include clearfix;
+}
+
+.MainContent {
+  $r: 7px;
+
+  float: left;
+  position: relative;
+  width: 75%;
+  height: $body_h;
+
+  border-top-left-radius: $r;
+  border-bottom-left-radius: $r;
+
+  background: #333;
+  color: #fff;
+}
+
+.MainSidebar {
+  float: left;
+  position: relative;
+  width: 25%;
+  height: $body_h;
+}
