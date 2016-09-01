@@ -1,82 +1,30 @@
 @import
+  //=== Libraries
   "libs/normalize",
   "libs/bourbon",
   "libs/neat/neat",
   "libs/bitters/base",
 
+  //=== Globals
   "global/settings",
   "global/utilities",
-  "global/base",
-  "global/layout",
-  "global/skin",
-  "global/typography",
   "modules/modules",
 
-  "app/lib/vars",
-  "app/lib/fonts",
-  "app/lib/scaffold",
+  //=== App specific globals
+  "app/lib/settings",
+  "app/lib/typography",
+  "app/lib/utilities",
+  "app/lib/base",
+  "app/lib/layout",
+  "app/lib/skins",
+
+  "app/components/header",
+  "app/components/main_canvas",
 
   "app/modules/channels",
   "app/modules/chat_panels",
+  "app/modules/user_balance",
 
-  "shame";
-
-.MainCanvas {
-  $h: 500px;
-  $m: ($body_h - $h)/2;
-
-  width: 700px;
-  height: $h;
-  margin: $m auto;
-  background: #000;
-}
-
-.UserBalance {
-  position: absolute;
-  bottom: 10px;
-  left: 0;
-  padding: 5px 0 0 30px;
-  color: rgba(255,255,255,0.4);
-
-  transition: color 400ms ease-out;
-
-  &:hover {
-    color: rgba(255, 255, 255, 0.9);
-  }
-}
-
-.UserBalance__currency {
-  $w: 40px;
-
-  position: absolute;
-  top: 0;
-  left: $w/-2;
-  width: $w;
-  height: $w;
-  border-radius: $w;
-  background: $body_bg;
-}
-
-.UserBalance__coin {
-  $w: 30px;
-
-  width: $w;
-  height: $w;
-  margin: 5px;
-  background: url("/images/vectors/icon_coin.svg") center center no-repeat;
-  background-size: cover;
-}
-
-
-.UserBalance__title {
-  margin: 0 0 2px 0;
-  font-family: "VAGRound";
-  font-weight: bold;
-  font-size: 18px;
-  line-height: 1em;
-}
-
-.UserBalance__label {
-  font-size: 13px;
-  line-height: 1em;
-}
+  //=== IE Over-rides
+  "global/shame",
+  "app/shame";

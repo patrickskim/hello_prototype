@@ -1,12 +1,7 @@
-body {
-  background: $body_bg;
-  font-family: "Proxima", "Helvetica", "Arial", sans-serif;
-}
-
 #MainContainer {
   @include outer-container;
 
-  $p: 10px;
+  $p: 15px;
 
   min-width: (1024px - $p*2) - 4; // 1024 - 10 fuck 4 pixels...
   max-width: 1280px - $p*2; // 1280 - 20
