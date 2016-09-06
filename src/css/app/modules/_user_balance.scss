@@ -24,19 +24,19 @@
   background: $body_bg;
 }
 
-.UserBalance__coin {
+.UserBalance__chips {
   $w: 25px;
 
   width: $w;
   height: $w;
   margin: 2px;
-  background: url("/images/vectors/icon_coin.svg") center center no-repeat;
+  background: url("/images/vectors/icon_chip.svg") center center no-repeat;
   background-size: cover;
 }
 
 
 .UserBalance__title {
-  margin: 0 0 2px 0;
+  margin: 0 0 3px 0;
   font-family: "VAGRound";
   font-weight: bold;
   font-size: 18px;
@@ -46,4 +46,5 @@
 .UserBalance__label {
   font-size: 13px;
   line-height: 1em;
+  font-style: italic;
 }
