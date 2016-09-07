@@ -1,0 +1,25 @@
+.UserCoins {
+  $coin_w: 30px;
+
+  position: relative;
+  padding: 0 0 0 $coin_w + 5;
+  margin: 5px 0 0 0;
+  background: yellow;
+
+  &__coin {
+    position: absolute;
+    top: 0; left: 0;
+    width: $coin_w;
+    height: $coin_w;
+
+    background: url("/images/vectors/icon_coin.svg") center center no-repeat;
+    background-size: cover;
+  }
+
+  &__balance {
+    font-family: "VAGRound";
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 32px;
+  }
+}

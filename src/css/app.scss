@@ -19,12 +19,16 @@
   "app/lib/skins",
 
   "app/components/header",
+  "app/components/header/user_info",
+  "app/components/header/user_image",
+  "app/components/header/user_level",
+  "app/components/header/user_coins",
+  "app/components/header/volume_controls",
+
   "app/components/main_canvas",
 
   "app/modules/channels",
   "app/modules/chat_panels",
-  "app/modules/user_coins",
-  "app/modules/user_info",
   "app/modules/user_balance",
 
   //=== IE Over-rides

@@ -1,0 +1,29 @@
+.UserInfo {
+  @include clearfix;
+
+  z-index: 300;
+  position: relative;
+  height: 60px;
+  margin: 0 0 0 -15px;
+
+  &__name {
+    width: 80px;
+    background: red;
+
+    font-family: "VAGRound";
+    font-size: 15px;
+    line-height: 1em;
+    font-weight: bold;
+    color: #333;
+
+    text-shadow: 0 1px 0 rgba(255,255,255, 0.8);
+    text-align: center;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .pa {
+    float: left;
+  }
+}

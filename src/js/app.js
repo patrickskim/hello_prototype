@@ -1,23 +1,8 @@
 import _ from 'underscore';
-import $ from 'jquery';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import MainContainer from './layouts/MainContainer';
 
-window.Lixir = {
-  'App': {
-    run() {
-      console.log('Hello!');
-    }
-  }
-};
+const target = document.getElementById('Root');
 
-window.onload = function() {
-  Lixir.App.run();
-};
-
-$(document).ready(function() {
-  console.log("ready!");
-});
-
-// Mock behaviors here
-$(".ChatPanels").on("click", function() {
-  $(this).toggleClass("js_move")
-});
+ReactDOM.render(<MainContainer />, target);

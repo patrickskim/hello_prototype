@@ -1,0 +1,21 @@
+.UserImage {
+  $avatar_w: 80px;
+
+  position: relative;
+  background: orange;
+  width: $avatar_w;
+  height: 60px;
+
+  &__avatar {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: $avatar_w;
+    height: $avatar_w;
+    border-radius: $avatar_w;
+    border: 3px solid #fff;
+    overflow: hidden;
+  }
+
+}

@@ -22,7 +22,7 @@ exports.config = {
 
   plugins: {
     babel: {
-      presets: ['es2015', 'stage-2', 'stage-0'],
+      presets: ['react','es2015', 'stage-2', 'stage-0'],
       ignore: [/vendor/],
     },
     sass: {
@@ -36,7 +36,7 @@ exports.config = {
     autoReload: {
       match: {
         stylesheets: ['*.scss', '*.css', '*.jpg', '*.png'],
-        javascripts: ['*.js']
+        javascripts: ['*.js', '*.jsx']
       }
     }
   },
@@ -52,6 +52,8 @@ exports.config = {
     whitelist: [
       'jquery',
       'moment',
+      'react',
+      'react-dom',
       'underscore',
     ],
   },

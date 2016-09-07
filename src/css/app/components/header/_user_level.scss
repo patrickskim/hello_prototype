@@ -1,0 +1,31 @@
+.UserLevel {
+  $h: 20px;
+
+  float: left;
+  position: relative;
+  width: 200px;
+  height: $h;
+  background: #333;
+
+  &__bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+
+    background: #94bd7b;
+  }
+
+  &__points {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    font-size: 14px;
+    line-height: $h;
+    text-align: center;
+    color: #fff;
+  }
+}
