@@ -31,7 +31,7 @@ exports.config = {
       },
     },
     postcss: {
-      processors: [ require('autoprefixer')(["last 2 version", "> 1%"]) ]
+      processors: [ require('autoprefixer')(['last 2 version', '> 1%']) ]
     },
     autoReload: {
       match: {
@@ -52,9 +52,10 @@ exports.config = {
     whitelist: [
       'jquery',
       'moment',
+      'lodash',
+      'pixi.js',
       'react',
       'react-dom',
-      'underscore',
     ],
   },
 };

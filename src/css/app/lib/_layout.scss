@@ -1,4 +1,4 @@
-.MainContainer {
+#MainContainer {
   @include outer-container;
 
   $p: 15px;
@@ -7,31 +7,46 @@
   max-width: 1280px - $p*2; // 1280 - 20
   padding: 0 $p;
 
-  background: #dce3ea;
+  // background: #dce3ea;
 }
 
-.MainBody {
+#MainHeader {
+  @include clearfix;
+
+  z-index: 300;
+  position: relative;
+  height: 60px;
+  // background: red;
+}
+
+#MainBody {
   @include clearfix;
 }
 
-.MainContent {
-  $r: 7px;
+#MainContent {
+  $r: 15px;
 
   float: left;
   position: relative;
   width: 75%;
   height: $body_h;
 
-  border-top-left-radius: $r;
   border-bottom-left-radius: $r;
 
   background: #333;
   color: #fff;
 }
 
-.MainSidebar {
+#MainSidebar {
   float: left;
   position: relative;
   width: 25%;
   height: $body_h;
+}
+
+#MainCanvas {
+  // margin: 0;
+  // width: 100%;
+  // height: $body_h;
+  // background: #000;
 }

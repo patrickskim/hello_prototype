@@ -5,7 +5,7 @@ export default class MainHeader extends Component {
 
   render() {
     return (
-      <section className="MainHeader">
+      <section id="MainHeader">
         <UserInfo />
         <div className="VolumeControls">Vol</div>
       </section>

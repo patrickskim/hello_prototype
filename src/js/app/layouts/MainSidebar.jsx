@@ -6,7 +6,7 @@ export default class MainSidebar extends React.Component {
 
   render() {
     return (
-      <div className="MainSidebar">
+      <div id="MainSidebar">
         <Channels />
         <ChatPanels />
       </div>

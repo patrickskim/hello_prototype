@@ -1,10 +1,9 @@
 .UserImage {
-  $avatar_w: 80px;
+  $avatar_w: 90px;
 
   position: relative;
-  background: orange;
   width: $avatar_w;
-  height: 60px;
+  height: $avatar_w;
 
   &__avatar {
     position: absolute;
@@ -14,8 +13,12 @@
     width: $avatar_w;
     height: $avatar_w;
     border-radius: $avatar_w;
-    border: 3px solid #fff;
+    border: 5px solid #fff;
     overflow: hidden;
+
+    img {
+      width: 100%;
+    }
   }
 
 }

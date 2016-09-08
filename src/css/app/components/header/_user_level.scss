@@ -1,7 +1,6 @@
 .UserLevel {
-  $h: 20px;
+  $h: 5px;
 
-  float: left;
   position: relative;
   width: 200px;
   height: $h;
@@ -17,6 +16,7 @@
   }
 
   &__points {
+    display: none;
     position: absolute;
     top: 0;
     left: 0;

@@ -10,10 +10,11 @@
   "plugins": ["react"],
   "rules": {
     "indent": ["error", 2],
-    "quotes": [2, "single", "avoid-escape"],
     "strict": [2, "never"],
     "new-cap": [2, { "capIsNewExceptions": ["Router", "Schema"] }],
     "camelcase": [0],
-    "consistent-return": [0]
+    "consistent-return": [0],
+    "semi": ["warn", "always"],
+    "quotes": ["warn", "single"]
   }
 }

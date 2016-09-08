@@ -1,29 +1,38 @@
 .UserInfo {
-  @include clearfix;
+  $avatar_w: 90px; // Main Header Avatar
+  $p: 10px;
 
   z-index: 300;
+  float: left;
   position: relative;
-  height: 60px;
-  margin: 0 0 0 -15px;
+  padding: 10px 0 0 $avatar_w;
 
   &__name {
-    width: 80px;
-    background: red;
+    margin: 5px 0 0 0;
+    width: $avatar_w;
 
     font-family: "VAGRound";
-    font-size: 15px;
+    font-size: 14px;
     line-height: 1em;
     font-weight: bold;
-    color: #333;
+    color: #fff;
 
-    text-shadow: 0 1px 0 rgba(255,255,255, 0.8);
+    text-shadow: 1px 2px 0 rgba(0,0,0, 0.2);
     text-align: center;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
   }
 
-  .pa {
-    float: left;
+  &__details {
+    position: absolute;
+    top: 5px;
+    left: -10px;
+    // background: red;
+  }
+
+  &__stats {
+    width: 300px;
+    // background: blue;
   }
 }

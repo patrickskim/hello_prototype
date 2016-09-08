@@ -5,7 +5,7 @@ export default class UserLevel extends Component {
   render() {
     let divStyle = {
       width: '77%'
-    }
+    };
 
     return (
       <div className="UserLevel">

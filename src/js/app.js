@@ -1,8 +1,15 @@
-import _ from 'underscore';
-import React from 'react';
-import ReactDOM from 'react-dom';
-import MainContainer from './layouts/MainContainer';
+import _ from 'lodash';
+import App from './app/index';
 
-const target = document.getElementById('Root');
+const globals = {
+  _: _,
+  Lixir: new App()
+};
 
-ReactDOM.render(<MainContainer />, target);
+_.extend(window, globals);
+
+window.onload = function(){
+  window.Lixir.init({
+    target: document.getElementById('Root'),
+  });
+};

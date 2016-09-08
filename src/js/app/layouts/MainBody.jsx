@@ -6,7 +6,7 @@ export default class MainBody extends Component {
 
   render() {
     return (
-      <section className="MainBody">
+      <section id="MainBody">
         <MainContent />
         <MainSidebar />
       </section>
