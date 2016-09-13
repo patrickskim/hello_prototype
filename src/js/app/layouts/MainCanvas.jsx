@@ -23,9 +23,16 @@ export default class MainCanvas extends Component {
     // Broke the rules a little here.
     this.state.width = this.elementDimensions().width;
 
-    console.log(this.state.width)
+    console.log(this.state.width);
     //Setup PIXI Canvas in componentDidMount
-    this.renderer = PIXI.autoDetectRenderer(this.state.width, this.state.height);
+    // arguments: width, height, view, transparent, antialias
+    this.renderer = PIXI.autoDetectRenderer(
+      this.state.width,
+      this.state.height,
+      { transparent: true,
+        antialias: true
+      });
+
     this.refs.gameCanvas.appendChild(this.renderer.view);
 
     this.drawIt();
@@ -91,7 +98,7 @@ export default class MainCanvas extends Component {
   resizeStage(width, height) {
     //this part adjusts the ratio:
     this.renderer.resize(width,height);
-    this.stage.emit('resize', width)
+    this.stage.emit('resize', width);
     // this might be heavy handed approach.
     // this.stage.removeChildren();
     // this.drawIt();
