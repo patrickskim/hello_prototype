@@ -37,7 +37,7 @@ const tableStyles = {
   }
 };
 
-export default class RollSimulation {
+export default class ThrowSimulation {
 
   constructor() {
 
@@ -106,24 +106,6 @@ export default class RollSimulation {
     return Bodies.rectangle(
       props.x, props.y, props.width, props.height, { isStatic: true }
     );
-  }
-
-  _drawChipStack(x=0, y=0, limit=10) {
-    _.times(limit, (i) => {
-      World.add(this.engine.world, this._createChip(x, y+i*5));
-    });
-  }
-
-  _createChip(x=0, y=0) {
-    let props = {
-      frictionAir: 0.08,
-      density: 0.03
-    };
-
-    let width = 20;
-    let height = 5;
-
-    return Bodies.rectangle(x, y, width, height, props);
   }
 
   _createDice(x=0, y=0, size=40) {

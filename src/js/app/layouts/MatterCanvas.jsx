@@ -12,13 +12,13 @@ export default class MainCanvas extends Component {
 
   componentDidMount() {
     let element = document.getElementById('MatterCanvas');
-    let throwProps = {
+    let rollProps = {
       velocity: { x: _.random(10,30) * -1, y: _.random(10,30) * -1 },
       angularVelocity: 1
     };
 
     this.rollSimulation.render(element);
-    this.rollSimulation.diceThrow(throwProps);
+    this.rollSimulation.diceRoll(rollProps);
     this.rollSimulation.run();
   }
 
