@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
-import PixiRenderer from '../views/PixiRenderer.js';
+import PixiRenderer from '../views/PixiRenderer';
+import RollSimulation from '../views/RollSimulation';
 
 export default class MainCanvas extends Component {
 
@@ -8,15 +9,22 @@ export default class MainCanvas extends Component {
     super(props);
 
     this.renderer = new PixiRenderer();
+
+    this.updateDimensions = _.throttle(this.updateDimensions, 500);
     this.updateDimensions = this.updateDimensions.bind(this);
   }
 
   componentDidMount() {
     let dimensions = this.elDimensions();
-    let view = this.renderer.render(dimensions);
-
-    this.gameCanvas.appendChild(view);
     this.state = dimensions;
+
+    // Get View and add to dom
+    let view = this.renderer.view(dimensions);
+    this.gameCanvas.appendChild(view);
+
+    // NOTE Wrap this in a function
+    this.renderer.render(RollSimulation);
+    this.renderer.scene.throwDice();
 
     window.addEventListener('resize', this.updateDimensions);
   }
@@ -33,9 +41,9 @@ export default class MainCanvas extends Component {
     return nextState.width !== this.state.width;
   }
 
-  updateDimensions: Function = _.throttle(() => {
+  updateDimensions() {
     this.setState(this.elDimensions());
-  }, 500);
+  }
 
   elDimensions() {
     return {

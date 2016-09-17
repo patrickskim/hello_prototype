@@ -15,21 +15,27 @@ export default class PixiRenderer {
     // arguments: width, height, view, transparent, antialias
     this.renderer = PIXI.autoDetectRenderer(this.width, this.height, this.props);
     this.stage = new PIXI.Container({options: 'ok'});
-
     this.animate = this.animate.bind(this);
   }
 
-  render(options = {}) {
+  view(options = {}) {
     // optional over-rides on render
     if (options.width) {
       this.width = options.width;
       this.updateDimensions(this.width);
     };
 
-    this._drawScene();
-    this.animate()
-
     return this.renderer.view;
+  }
+
+  render(Scene) {
+    if (!Scene) {
+      return;
+    }
+
+    this.scene = new Scene();
+    this.stage.addChild(this.scene.render());
+    this.animate();
   }
 
   updateDimensions(width, height) {
@@ -46,18 +52,11 @@ export default class PixiRenderer {
   }
 
   animate() {
+    if (this.scene) {
+      this.scene.update();
+    }
+
     this.renderer.render(this.stage);
-    this.frame = requestAnimationFrame(this.animate);
+    requestAnimationFrame(this.animate);
   }
-
-  _drawScene() {
-    let graphics = new PIXI.Graphics();
-    graphics.beginFill(0xe74c3c); // Red
-    graphics.drawCircle(200, 500, 40);
-    graphics.endFill();
-
-    // Add the graphics to the stage
-    this.stage.addChild(graphics);
-  }
-
 }

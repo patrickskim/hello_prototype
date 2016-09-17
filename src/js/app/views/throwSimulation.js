@@ -102,20 +102,11 @@ export default class ThrowSimulation {
   }
 
   _createDice(x=0, y=0, size=40) {
-    let props = {
-      // frictionAir: 0.5,
-      // restitution: 0.3,
-      // density: 0.01,
-      collisionFilter: {
-        category: 0x0002
-      }
-    };
-
-    let d1 = this._createDie(x, y, size, props);
-    let d2 = this._createDie(size *2, y, size, props);
+    let d1 = this._createDie(x, y, size);
+    let d2 = this._createDie(size *2, y, size);
     let pivotPoint = this._createPivotPoint(x, y, size);
     let dice = Composite.create({bodies: [d1, pivotPoint, d2]});
-    
+
     Composites.chain(dice, 0, 0, 0, 0, { stiffness: 0.2, length: 37 });
 
     return dice;
@@ -131,7 +122,15 @@ export default class ThrowSimulation {
     return Bodies.circle(x, y, radius, props);
   }
 
-  _createDie(x=0, y=0, size=40, props={}) {
+  _createDie(x=0, y=0, size=40) {
+    let props = {
+      frictionAir: 0.01,
+      // restitution: 0.3,
+      density: 0.01,
+      collisionFilter: {
+        category: 0x0002
+      }
+    };
 
     return Bodies.rectangle(x, y, size, size, props);
   }
