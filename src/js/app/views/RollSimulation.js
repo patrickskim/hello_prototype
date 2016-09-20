@@ -1,7 +1,7 @@
-import _ from 'lodash';
-import RollPhysics from './RollPhysics';
 // PIXI is exposed in the global namespace
 // import PIXI from 'pixi.js';
+import _ from 'lodash';
+import RollPhysics from './RollPhysics';
 
 const diceStyles = {
   backgroundImage: '/images/d5.png',
