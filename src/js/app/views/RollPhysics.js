@@ -1,5 +1,6 @@
 import _ from 'lodash';
-import { Body, Bodies, Engine, Render, World } from 'matter-js';
+import { Body, Bodies, Engine, Events, Render, World } from 'matter-js';
+import { EventEmitter } from 'events';
 
 const tableProps = {
   width: 650,
@@ -15,31 +16,25 @@ const tableStyles = {
     x: tableProps.width/2,
     y: 0,
     width: tableProps.width - tableProps.borderLeft - tableProps.borderRight,
-    height: tableProps.borderTop
+    height: tableProps.borderTop,
   },
   right: {
     x: tableProps.width- tableProps.borderRight/2,
     y: tableProps.height/2,
     width: tableProps.borderRight,
-    height: tableProps.height
+    height: tableProps.height,
   },
-  // bottom: {
-  //   x: tableProps.width/2,
-  //   y: tableProps.height,
-  //   width: tableProps.width - tableProps.borderLeft - tableProps.borderRight,
-  //   height: tableProps.borderBottom
-  // },
   left: {
     x: tableProps.borderLeft/2,
     y: tableProps.height/2,
     width: tableProps.borderLeft,
-    height: tableProps.height
+    height: tableProps.height,
   }
 };
 
 const diceProps = {
   size: 40,
-  physics: {
+  options: {
     label: 'Die',
     frictionAir: 0.025,
     restitution: 0.3,
@@ -54,9 +49,10 @@ const rendererProps = {
   showAxes: true
 };
 
-export default class RollPhysics {
+export default class RollPhysics extends EventEmitter {
 
   constructor() {
+    super();
     this.engine = Engine.create({ enableSleeping: true });
     this.engine.world.gravity = {x: 0, y: 0};
 
@@ -104,7 +100,21 @@ export default class RollPhysics {
   }
 
   createDie({ x, y }) {
-    return Bodies.rectangle(x, y, diceProps.size, diceProps.size, diceProps.physics);
+    let die = Bodies.rectangle(x, y, diceProps.size, diceProps.size, diceProps.options);
+
+    Events.on(this.engine, 'collisionEnd', (event) => {
+      _(event.pairs).each((pair) => {
+        this.emit('collisionEnd', pair.bodyA.label, pair.bodyB.label);
+      });
+    });
+
+    Events.on(die, 'sleepStart', (die) => {
+      console.log('p SleepStart');
+      this.emit('sleepStart', die);
+    });
+
+    console.log('create Pdie');
+    return die;
   }
 
   createTable() {
@@ -116,7 +126,7 @@ export default class RollPhysics {
   }
 
   createBorder({ x, y, width, height }) {
-    return Bodies.rectangle(x, y, width, height, { isStatic: true });
+    return Bodies.rectangle(x, y, width, height, { label: 'Table', isStatic: true });
   }
 
   // this._drawChipStack(200, 200, 10);

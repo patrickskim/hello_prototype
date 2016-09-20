@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import MainCanvas from './MainCanvas';
-// import MainCanvas from './MatterCanvas';
+// import MainCanvas from '../sandbox/SandBoxCanvas';
 import UserBalance from '../components/UserBalance';
 
 export default class MainContent extends Component {
