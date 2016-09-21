@@ -21,7 +21,6 @@ export default class RollSimulation {
     return this.stage;
   }
 
-
   ready() {
     this._createDice({ num: 2, position: { x: 300, y: 600 } });
     this._renderScene();

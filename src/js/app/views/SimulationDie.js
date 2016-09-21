@@ -10,7 +10,7 @@ const diceProps = {
   options: {
     label: 'Die',
     frictionAir: 0.025,
-    // restitution: 0.3,
+    restitution: 0.3,
     density: 0.05
   }
 };
