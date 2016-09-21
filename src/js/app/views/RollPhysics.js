@@ -32,16 +32,6 @@ const tableStyles = {
   }
 };
 
-const diceProps = {
-  size: 40,
-  options: {
-    label: 'Die',
-    frictionAir: 0.025,
-    restitution: 0.3,
-    density: 0.01
-  }
-};
-
 const rendererProps = {
   width: tableProps.width,
   height: tableProps.height,
@@ -54,10 +44,14 @@ export default class RollPhysics extends EventEmitter {
   constructor() {
     super();
     this.engine = Engine.create({ enableSleeping: true });
-    this.engine.world.gravity = {x: 0, y: 0};
+    this.engine.world.gravity = { x: 0, y: 0 };
 
-    this.table = this.createTable();
-    this.dice  = this.createDice({ num: 2, x: 300, y: 600 });
+    this.detectCollisions = this.detectCollisions.bind(this);
+    Events.on(this.engine, 'collisionEnd', this.detectCollisions);
+  }
+
+  clear() {
+    Events.off(this.engine, 'collisionEnd', this.detectCollisions);
   }
 
   render(element) {
@@ -69,52 +63,31 @@ export default class RollPhysics extends EventEmitter {
   }
 
   run() {
-    Engine.run(this.engine);
-
     if (this.renderer) {
       Render.run(this.renderer);
     };
+
+    Engine.run(this.engine);
   }
 
-  diceRoll({ velocity, angularVelocity }) {
-    _(this.dice).each((die) => {
-      Body.setVelocity(die, velocity);
-      Body.setAngularVelocity(die, angularVelocity);
+  detectCollisions(event) {
+    // NOTE maybe turn this into a sound engine with seperate props?
+    _(event.pairs).each((pair) => {
+      this.emit('collisionEnd', pair.bodyA.label, pair.bodyB.label);
     });
+  }
+
+  addChild(physicsObj) {
+    if (!physicsObj) {
+      return;      
+    }
+
+    World.add(this.engine.world, [ physicsObj ]);
   }
 
   drawScene() {
-    let sceneItems = _.concat(this.table, this.dice);
-    World.add(this.engine.world, sceneItems);
-  }
-
-  createDice({ num, x, y }) {
-    let dice = [];
-
-    _(num).times( (count) => {
-      let offsetX = (count * diceProps.size) + x;
-      dice.push(this.createDie({ x: offsetX, y: y }));
-    });
-
-    return dice;
-  }
-
-  createDie({ x, y }) {
-    let die = Bodies.rectangle(x, y, diceProps.size, diceProps.size, diceProps.options);
-
-    Events.on(this.engine, 'collisionEnd', (event) => {
-      _(event.pairs).each((pair) => {
-        this.emit('collisionEnd', pair.bodyA.label, pair.bodyB.label);
-      });
-    });
-
-    Events.on(die, 'sleepStart', (die) => {
-      console.log('p SleepStart');
-      this.emit('sleepStart', die);
-    });
-
-    console.log('create Pdie');
-    return die;
+    this.table = this.createTable();
+    World.add(this.engine.world, this.table);
   }
 
   createTable() {
@@ -128,25 +101,5 @@ export default class RollPhysics extends EventEmitter {
   createBorder({ x, y, width, height }) {
     return Bodies.rectangle(x, y, width, height, { label: 'Table', isStatic: true });
   }
-
-  // this._drawChipStack(200, 200, 10);
-  //
-  // _drawChipStack(x=0, y=0, limit=10) {
-  //   _.times(limit, (i) => {
-  //     World.add(this.engine.world, this._createChip(x, y+i*5));
-  //   });
-  // }
-  //
-  // _createChip(x=0, y=0) {
-  //   let props = {
-  //     frictionAir: 0.08,
-  //     density: 0.03
-  //   };
-  //
-  //   let width = 20;
-  //   let height = 5;
-  //
-  //   return Bodies.rectangle(x, y, width, height, props);
-  // }
 
 }

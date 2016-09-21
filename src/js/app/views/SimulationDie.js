@@ -17,37 +17,20 @@ const diceProps = {
 
 export default class SimulationDie extends EventEmitter {
 
-  constructor({ x, y, engine, stage }) {
-    this.engine = engine;
-    this.stage = stage;
+  constructor({ position }) {
+    super();
 
-    this.physics = this.createDiePhysics(x,y);
+    this.position = position;
+    this.physics = this._createDiePhysics();
     this.sprite = this._drawDieSprite();
 
-    this.ready = this.ready.bind(this);
-    this.detectCollisions = this.detectCollisions.bind(this);
     this.detectSleep = this.detectSleep.bind(this);
-
-    Events.on(this.engine, 'collisionEnd', this.detectCollisions);
-    Events.on(this.die, 'sleepStart', this.detectSleep);
+    Events.on(this.physics, 'sleepStart', this.detectSleep);
   }
 
   clear() {
     // should it leave from the stage?
-    Events.off(this.engine, 'collisionEnd', this.detectCollisions);
-    Events.off(die);
-  }
-
-  render() {
-    PIXI.loader
-      .add('spritesheet', '/images/d6Sprite.json')
-      .load(this.ready);
-
-    return this.stage;
-  }
-
-  ready() {
-    this.stage.addChild(this.sprite);
+    Events.off(this.physics);
   }
 
   update() {
@@ -55,8 +38,12 @@ export default class SimulationDie extends EventEmitter {
       return;
     }
 
-    this.sprite.position = this.physics.position;
-    this.sprite.rotation = this.physics.angle;
+    // one way data flow for positioning.
+    this.position = this.physics.position;
+    this.rotation = this.physics.angle;
+
+    this.sprite.position = this.position;
+    this.sprite.rotation = this.rotation;
   }
 
   throw({velocity, angularVelocity}) {
@@ -64,36 +51,39 @@ export default class SimulationDie extends EventEmitter {
     Body.setAngularVelocity(this.physics, angularVelocity);
   }
 
-  detectCollisions(event) {
-    _(event.pairs).each((pair) => {
-      this.emit('collisionEnd', pair.bodyA.label, pair.bodyB.label);
-    });
-  }
-
   detectSleep() {
     return this.emit('sleepStart', this);
   }
 
-  _createDiePhysics(x,y) {
-    return Bodies.rectangle(x, y, diceProps.size, diceProps.size, diceProps.options);
+  _createDiePhysics() {
+    return Bodies.rectangle(
+      this.position.x, 
+      this.position.y, 
+      diceProps.size, 
+      diceProps.size, 
+      diceProps.options
+    );
   }
 
   _drawDieSprite() {
-    let frames = [];
-    let randomOffset = _.random(1,6) * 16;
+    let die = new PIXI.extras.MovieClip(this._drawDieFrames());
 
-    _(16).times((index)=> {
-      let num = randomOffset + index;
-      frames.push(PIXI.Texture.fromFrame(`d6_roll_${num}`));
-    });
-
-    let die = new PIXI.extras.MovieClip(frames);
-
-    die.anchor.set(0.5, 0.5);
-    die.position = this.physics.position;
-
+    die.anchor = { x: 0.5, y: 0.5 };
+    die.position = this.position;
     die.play();
 
     return die;
+  }
+
+  _drawDieFrames() {
+    let frames = [];
+    let randomOffset = _.random(0,6) * 16;
+
+    _(16).times((index)=> {
+      let num = randomOffset + index + 1;
+      frames.push(PIXI.Texture.fromFrame(`d6_roll_${num}`));
+    });
+
+    return frames;
   }
 }

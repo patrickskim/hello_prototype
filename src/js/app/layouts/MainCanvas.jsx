@@ -24,7 +24,6 @@ export default class MainCanvas extends Component {
 
     // NOTE Wrap this in a function
     this.renderer.render(RollSimulation);
-    this.renderer.scene.throwDice();
 
     window.addEventListener('resize', this.updateDimensions);
   }
