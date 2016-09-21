@@ -10,8 +10,8 @@ const diceProps = {
   options: {
     label: 'Die',
     frictionAir: 0.025,
-    restitution: 0.3,
-    density: 0.01
+    // restitution: 0.3,
+    density: 0.05
   }
 };
 
@@ -52,6 +52,7 @@ export default class SimulationDie extends EventEmitter {
   }
 
   detectSleep() {
+    this.sprite.stop();
     return this.emit('sleepStart', this);
   }
 
@@ -68,7 +69,7 @@ export default class SimulationDie extends EventEmitter {
   _drawDieSprite() {
     let die = new PIXI.extras.MovieClip(this._drawDieFrames());
 
-    die.anchor = { x: 0.5, y: 0.5 };
+    die.anchor.set(0.5, 0.5);
     die.position = this.position;
     die.play();
 

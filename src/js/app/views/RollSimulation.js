@@ -23,7 +23,7 @@ export default class RollSimulation {
 
 
   ready() {
-    this._createDice({ num: 2, position: { x: 200, y: 600 } });
+    this._createDice({ num: 2, position: { x: 300, y: 600 } });
     this._renderScene();
     this._renderDice();
     this._runSimulation();
