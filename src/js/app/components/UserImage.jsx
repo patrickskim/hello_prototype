@@ -6,9 +6,10 @@ export default class UserImage extends Component {
     return (
       <div className="UserImage">
         <div className="UserImage__avatar">
-          <img src="/images/profile.jpg" />
         </div>
       </div>
     );
   }
 }
+
+// <img src="/images/profile.jpg" />

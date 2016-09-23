@@ -17,7 +17,7 @@ export default class RollSimulation {
     PIXI.loader
       .add('spritesheet', '/images/d6Sprite.json')
       .load(this.ready);
-     
+
     return this.stage;
   }
 

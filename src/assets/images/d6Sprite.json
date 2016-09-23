@@ -783,11 +783,25 @@
       "trimmed":false,
       "spriteSourceSize":{ "x":0, "y":0, "w":40, "h":40 },
       "sourceSize":{ "w":40, "h":40 }
+    },
+    "d6_roll_113":{
+      "frame":{ "x":0, "y":280, "w":40, "h":40 },
+      "rotated":false,
+      "trimmed":false,
+      "spriteSourceSize":{ "x":0, "y":0, "w":40, "h":40 },
+      "sourceSize":{ "w":40, "h":40 }
+    },
+    "d6_roll_114":{
+      "frame":{ "x":40, "y":280, "w":40, "h":40 },
+      "rotated":false,
+      "trimmed":false,
+      "spriteSourceSize":{ "x":0, "y":0, "w":40, "h":40 },
+      "sourceSize":{ "w":40, "h":40 }
     }
   },
   "meta": {
     "image": "d6_lg.png",
-    "size": {"w": 640, "h": 280},
+    "size": {"w": 640, "h": 320},
     "scale": "1"
   }
 }
