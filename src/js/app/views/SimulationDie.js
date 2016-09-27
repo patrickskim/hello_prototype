@@ -10,8 +10,8 @@ const diceProps = {
   options: {
     label: 'Die',
     frictionAir: 0.025,
-    restitution: 0.5,
-    density: 0.05
+    // restitution: 0,
+    density: 0.07
   }
 };
 
@@ -38,7 +38,7 @@ export default class SimulationDie extends EventEmitter {
       return;
     }
 
-    if (this._isNotMoving) {
+    if (this._isNotMoving()) {
       this.finalizeDie();
     }
 
@@ -72,7 +72,7 @@ export default class SimulationDie extends EventEmitter {
   }
 
   _isNotMoving() {
-    return this._averageVelocity() <= 0;
+    return this._averageVelocity() <= 0.5;
   }
 
   _averageVelocity() {
@@ -103,7 +103,7 @@ export default class SimulationDie extends EventEmitter {
 
   _drawDieFrames() {
     let frames = [];
-    let randomOffset = _.random(0,6) * 16;
+    // let randomOffset = _.random(0,6) * 16;
 
     _(114).times((index)=> {
       // let num = randomOffset + index + 1;
