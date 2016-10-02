@@ -1,11 +1,11 @@
-export let EmitterProps = {
+export default {
   alpha: {
     start: 0.8,
     end: 0.1
   },
   scale: {
     start: 1,
-    end: 0.3
+    end: 0.01
   },
   color: {
     start: 'fb1010',
@@ -13,32 +13,33 @@ export let EmitterProps = {
   },
   speed: {
     start: 200,
-    end: 100
+    end: 20
   },
   startRotation: {
-    min: 0,
-    max: 360
+    min: 90,
+    max: 70
   },
+  noRotation: true,
   rotationSpeed: {
     min: 0,
     max: 0
   },
   lifetime: {
-    min: 0.5,
-    max: 0.5
+    min: 0.2,
+    max: 0.8
   },
   frequency: 0.008,
   emitterLifetime: -1,
-  maxParticles: 1000,
+  maxParticles: 50,
   pos: {
-    x: 200,
-    y: 200
+    x: 0,
+    y: 0
   },
   addAtBack: false,
   spawnType: 'circle',
   spawnCircle: {
-    x: 0,
+    x: 6,
     y: 0,
-    r: 10
+    r: 11
   }
 };

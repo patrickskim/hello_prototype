@@ -4,6 +4,7 @@
 import _ from 'lodash';
 import { Body, Bodies, Events } from 'matter-js';
 import { EventEmitter } from 'events';
+import EmitterProps from './EmitterProps';
 
 const diceProps = {
   size: 40,
@@ -22,7 +23,8 @@ export default class SimulationDie extends EventEmitter {
 
     this.position = position;
     this.physics = this._createDiePhysics();
-    this.sprite = this._drawDieSprite();
+
+    this._createDie();
 
     this.detectSleep = this.detectSleep.bind(this);
     Events.on(this.physics, 'sleepStart', this.detectSleep);
@@ -34,20 +36,8 @@ export default class SimulationDie extends EventEmitter {
   }
 
   update() {
-    if (this.physics.isSleeping) {
-      return;
-    }
-
-    if (this._isNotMoving()) {
-      this.finalizeDie();
-    }
-
-    // one way data flow for positioning.
-    this.position = this.physics.position;
-    this.rotation = this.physics.angle;
-
-    this.sprite.position = this.position;
-    this.sprite.rotation = this.rotation;
+    this._updateDie();
+    this._updateParticles();
   }
 
   throw({velocity, angularVelocity}) {
@@ -67,17 +57,41 @@ export default class SimulationDie extends EventEmitter {
     // assumes all frames are available
     let diceFace = [48, 52, 112, 113, 60,56];
 
+
     this.sprite.gotoAndStop(_(diceFace).sample());
     this.finalized = true;
+    this.emitter.emit = false;
   }
 
-  _isNotMoving() {
-    return this._averageVelocity() <= 0.5;
+  _createDie() {
+    this.body = new PIXI.Container();
+    this.particles = new PIXI.Container();
+    this.sprite = this._drawDieSprite();
+
+    this.body.addChild(this.particles);
+    this.body.addChild(this.sprite);
+    this._renderParticles(this.particles);
+
+    this.body.position = this.position;
+
+    return;
   }
 
-  _averageVelocity() {
-    let velocity = (this.physics.velocity.x + this.physics.velocity.y)/2;
-    return Math.floor(Math.abs(velocity));
+  _updateDie() {
+    if (this.physics.isSleeping) {
+      return;
+    }
+
+    if (this._isNotMoving()) {
+      this.finalizeDie();
+    }
+
+    // one way data flow for positioning.
+    this.position = this.physics.position;
+    this.rotation = this.physics.angle;
+
+    this.body.position = this.position;
+    this.sprite.rotation = this.rotation;
   }
 
   _createDiePhysics() {
@@ -94,7 +108,7 @@ export default class SimulationDie extends EventEmitter {
     let die = new PIXI.extras.MovieClip(this._drawDieFrames());
 
     die.anchor.set(0.5, 0.5);
-    die.position = this.position;
+    // die.position = this.position;
     die.animationSpeed = 1.5;
     die.play();
 
@@ -113,4 +127,35 @@ export default class SimulationDie extends EventEmitter {
 
     return frames;
   }
+
+  _renderParticles(container) {
+    // Create a new emitter
+    this.elapsed = Date.now();
+    this.emitter = new PIXI.particles.Emitter(
+      container,
+      [PIXI.Texture.fromImage('images/obj_pollen_hd.png')],
+      EmitterProps);
+  }
+
+  _updateParticles() {
+    if (!this.emitter) {
+      return;
+    }
+
+    let now = Date.now();
+    this.emitter.update((now - this.elapsed) * 0.001);
+    this.elapsed = now;
+  }
+
+  _isNotMoving() {
+    return this._averageVelocity() <= 0.5;
+  }
+
+  _averageVelocity() {
+    let velocity = (this.physics.velocity.x + this.physics.velocity.y)/2;
+    return Math.floor(Math.abs(velocity));
+  }
+
 }
+
+

@@ -4,7 +4,6 @@ import 'pixi-particles'; // Include itself to PIXI
 import _ from 'lodash';
 import RollPhysics from './RollPhysics';
 import SimulationDie from './SimulationDie';
-import { EmitterProps } from './EmitterProps';
 
 export default class RollSimulation {
 
@@ -31,12 +30,11 @@ export default class RollSimulation {
     this._runSimulation();
     this.rollDice();
 
-    this._renderParticles();
+    // this._renderParticles();
   }
 
   update() {
     this._updateDice();
-    this._updateParticles();
   }
 
   rollDice() {
@@ -46,25 +44,6 @@ export default class RollSimulation {
     };
 
     return this._throwDice(rollSeed);
-  }
-
-  _renderParticles() {
-    // Create a new emitter
-    this.elapsed = Date.now();
-    this.emitter = new PIXI.particles.Emitter(
-      this.stage,
-      [PIXI.Texture.fromImage('images/obj_pollen_hd.png')],
-      EmitterProps);
-  }
-
-  _updateParticles() {
-    if (!this.emitter) {
-      return;
-    }
-
-    let now = Date.now();
-    this.emitter.update((now - this.elapsed) * 0.001);
-    this.elapsed = now;
   }
 
   _createDice({num, position}) {
@@ -92,7 +71,7 @@ export default class RollSimulation {
   _renderDice() {
     return _(this.dice).each((die) => {
       this.rollPhysics.addChild(die.physics);
-      this.stage.addChild(die.sprite);
+      this.stage.addChild(die.body);
     });
   }
 
