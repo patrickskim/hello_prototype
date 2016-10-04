@@ -30,7 +30,7 @@ export default {
   },
   frequency: 0.008,
   emitterLifetime: -1,
-  maxParticles: 50,
+  maxParticles: 20,
   pos: {
     x: 0,
     y: 0

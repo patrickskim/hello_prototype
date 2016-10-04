@@ -5,13 +5,16 @@ import _ from 'lodash';
 import RollPhysics from './RollPhysics';
 import SimulationDie from './SimulationDie';
 
-export default class RollSimulation {
+export default class {
 
   constructor() {
     this.stage = new PIXI.Container();
     this.rollPhysics = new RollPhysics();
 
     this.ready = this.ready.bind(this);
+
+    this.rollDice = this.rollDice.bind(this);
+    window.addEventListener('roll', this.rollDice);
   }
 
   render() {
@@ -27,10 +30,6 @@ export default class RollSimulation {
     this._createDice({ num: 2, position: { x: 300, y: 600 } });
     this._renderScene();
     this._renderDice();
-    this._runSimulation();
-    this.rollDice();
-
-    // this._renderParticles();
   }
 
   update() {
@@ -38,12 +37,14 @@ export default class RollSimulation {
   }
 
   rollDice() {
+    console.log('rolling');
     let rollSeed = {
       velocity: { x: -30, y: _.random(10,30) * -1 },
       angularVelocity: 0.2,
     };
 
-    return this._throwDice(rollSeed);
+    this._runSimulation();
+    this._throwDice(rollSeed);
   }
 
   _createDice({num, position}) {

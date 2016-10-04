@@ -22,7 +22,6 @@ export default class SimulationDie extends EventEmitter {
     super();
 
     this.position = position;
-    this.physics = this._createDiePhysics();
 
     this._createDie();
 
@@ -40,9 +39,12 @@ export default class SimulationDie extends EventEmitter {
     this._updateParticles();
   }
 
-  throw({velocity, angularVelocity}) {
+  throw({ velocity, angularVelocity }) {
     Body.setVelocity(this.physics, velocity);
     Body.setAngularVelocity(this.physics, angularVelocity);
+
+    this.emitter.emit = true;
+    this.state = 'rolling';
   }
 
   detectSleep() {
@@ -57,13 +59,14 @@ export default class SimulationDie extends EventEmitter {
     // assumes all frames are available
     let diceFace = [48, 52, 112, 113, 60,56];
 
-
     this.sprite.gotoAndStop(_(diceFace).sample());
-    this.finalized = true;
     this.emitter.emit = false;
+    this.state = 'final';
   }
 
   _createDie() {
+    this.physics = this._createDiePhysics();
+
     this.body = new PIXI.Container();
     this.particles = new PIXI.Container();
     this.sprite = this._drawDieSprite();
@@ -73,16 +76,15 @@ export default class SimulationDie extends EventEmitter {
     this._renderParticles(this.particles);
 
     this.body.position = this.position;
-
-    return;
+    this.state = 'ready';
   }
 
   _updateDie() {
-    if (this.physics.isSleeping) {
+    if (this._isStationary()) {
       return;
     }
 
-    if (this._isNotMoving()) {
+    if (!this._isMoving()) {
       this.finalizeDie();
     }
 
@@ -135,6 +137,7 @@ export default class SimulationDie extends EventEmitter {
       container,
       [PIXI.Texture.fromImage('images/obj_pollen_hd.png')],
       EmitterProps);
+    this.emitter.emit = false;
   }
 
   _updateParticles() {
@@ -147,8 +150,8 @@ export default class SimulationDie extends EventEmitter {
     this.elapsed = now;
   }
 
-  _isNotMoving() {
-    return this._averageVelocity() <= 0.5;
+  _isMoving() {
+    return this._averageVelocity() >= 0.5;
   }
 
   _averageVelocity() {
@@ -156,6 +159,9 @@ export default class SimulationDie extends EventEmitter {
     return Math.floor(Math.abs(velocity));
   }
 
+  _isStationary() {
+    return (this.state == 'final' || this.state == 'ready');
+  }
 }
 
 

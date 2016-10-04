@@ -79,7 +79,7 @@ export default class RollPhysics extends EventEmitter {
 
   addChild(physicsObj) {
     if (!physicsObj) {
-      return;      
+      return;
     }
 
     World.add(this.engine.world, [ physicsObj ]);
