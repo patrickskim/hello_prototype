@@ -47,11 +47,11 @@ export default class RollPhysics extends EventEmitter {
     this.engine.world.gravity = { x: 0, y: 0 };
 
     this.detectCollisions = this.detectCollisions.bind(this);
-    Events.on(this.engine, 'collisionEnd', this.detectCollisions);
+    Events.on(this.engine, 'collisionStart', this.detectCollisions);
   }
 
   clear() {
-    Events.off(this.engine, 'collisionEnd', this.detectCollisions);
+    Events.off(this.engine, 'collisionStart', this.detectCollisions);
   }
 
   render(element) {
@@ -73,7 +73,7 @@ export default class RollPhysics extends EventEmitter {
   detectCollisions(event) {
     // NOTE maybe turn this into a sound engine with seperate props?
     _(event.pairs).each((pair) => {
-      this.emit('collisionEnd', pair.bodyA.label, pair.bodyB.label);
+      this.emit('collision', pair.bodyA.label, pair.bodyB.label);
     });
   }
 

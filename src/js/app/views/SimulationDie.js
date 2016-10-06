@@ -4,17 +4,7 @@
 import _ from 'lodash';
 import { Body, Bodies, Events } from 'matter-js';
 import { EventEmitter } from 'events';
-import EmitterProps from './EmitterProps';
-
-const diceProps = {
-  size: 40,
-  options: {
-    label: 'Die',
-    frictionAir: 0.025,
-    // restitution: 0,
-    density: 0.07
-  }
-};
+import DiceProps from './DiceProps';
 
 export default class SimulationDie extends EventEmitter {
 
@@ -43,6 +33,7 @@ export default class SimulationDie extends EventEmitter {
     Body.setVelocity(this.physics, velocity);
     Body.setAngularVelocity(this.physics, angularVelocity);
 
+    this.maxVelocity = this._averageVelocity();
     this.emitter.emit = true;
     this.state = 'rolling';
   }
@@ -100,9 +91,9 @@ export default class SimulationDie extends EventEmitter {
     return Bodies.rectangle(
       this.position.x,
       this.position.y,
-      diceProps.size,
-      diceProps.size,
-      diceProps.options
+      DiceProps.Physics.size,
+      DiceProps.Physics.size,
+      DiceProps.Physics.options
     );
   }
 
@@ -110,8 +101,7 @@ export default class SimulationDie extends EventEmitter {
     let die = new PIXI.extras.MovieClip(this._drawDieFrames());
 
     die.anchor.set(0.5, 0.5);
-    // die.position = this.position;
-    die.animationSpeed = 1.5;
+    die.animationSpeed = 1;
     die.play();
 
     return die;
@@ -136,7 +126,7 @@ export default class SimulationDie extends EventEmitter {
     this.emitter = new PIXI.particles.Emitter(
       container,
       [PIXI.Texture.fromImage('images/obj_pollen_hd.png')],
-      EmitterProps);
+      DiceProps.Emitter);
     this.emitter.emit = false;
   }
 

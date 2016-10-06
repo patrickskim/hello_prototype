@@ -10,10 +10,18 @@ export default class {
   constructor() {
     this.stage = new PIXI.Container();
     this.rollPhysics = new RollPhysics();
-
-    this.ready = this.ready.bind(this);
+    this._settings = {
+      shakesCount: 0,
+      shakeX: true,
+      shakeY: true,
+      sensCoef: 0.5
+    };
 
     this.rollDice = this.rollDice.bind(this);
+
+    this.ready = this.ready.bind(this);
+    this.collisionFx = this.collisionFx.bind(this);
+    this.rollPhysics.addListener('collision', this.collisionFx);
     window.addEventListener('roll', this.rollDice);
   }
 
@@ -33,11 +41,18 @@ export default class {
   }
 
   update() {
+    this._moveCamera();
     this._updateDice();
   }
 
+  collisionFx(itemA, itemB) {
+    if (itemB == "Table") {
+      this._settings.shakesCount = 10;
+    }
+    console.log('collide', itemA, itemB);
+  }
+
   rollDice() {
-    console.log('rolling');
     let rollSeed = {
       velocity: { x: -30, y: _.random(10,30) * -1 },
       angularVelocity: 0.2,
@@ -88,6 +103,28 @@ export default class {
 
   _runSimulation() {
     return this.rollPhysics.run();
+  }
+
+  _moveCamera() {
+    if(this._settings.shakesCount > 0){
+      let sens = this._settings.shakesCount * this._settings.sensCoef;
+
+      if(this._settings.shakesCount % 2){
+        this.stage.x += this._settings.shakeX ? sens : 0;
+        this.stage.y += this._settings.shakeY ? sens : 0;
+      }
+      else {
+        this.stage.x -= this._settings.shakeX ? sens : 0;
+        this.stage.y -= this._settings.shakeY ? sens : 0;
+      }
+
+      this._settings.shakesCount--;
+
+      if(this._settings.shakesCount === 0){
+        this.stage.x = 0;
+        this.stage.y = 0;
+      }
+    }
   }
 
 }
