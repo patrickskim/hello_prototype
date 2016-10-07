@@ -4,12 +4,14 @@ import 'pixi-particles'; // Include itself to PIXI
 import _ from 'lodash';
 import RollPhysics from './RollPhysics';
 import SimulationDie from './SimulationDie';
+import SimulationChipStack from './SimulationChipStack';
 
 export default class {
 
   constructor() {
     this.stage = new PIXI.Container();
     this.rollPhysics = new RollPhysics();
+
     this._settings = {
       shakesCount: 0,
       shakeX: true,
@@ -20,8 +22,8 @@ export default class {
     this.rollDice = this.rollDice.bind(this);
 
     this.ready = this.ready.bind(this);
-    this.collisionFx = this.collisionFx.bind(this);
-    this.rollPhysics.addListener('collision', this.collisionFx);
+    // this.collisionFx = this.collisionFx.bind(this);
+    // this.rollPhysics.addListener('collision', this.collisionFx);
     window.addEventListener('roll', this.rollDice);
   }
 
@@ -29,24 +31,36 @@ export default class {
     PIXI.loader
       .add('d6_spritesheet', '/images/d6Sprite.json')
       .add('particle_img', '/images/obj_pollen_hd.png')
+      .add('chip', '/images/chip.png')
       .load(this.ready);
 
     return this.stage;
   }
 
   ready() {
+    this.setupScene();
+    this.renderScene();
+  }
+
+  setupScene() {
     this._createDice({ num: 2, position: { x: 300, y: 600 } });
-    this._renderScene();
+    this._createChipStack({ stackSize: 1, position: { x: 100, y: 200 } });
+  }
+
+  renderScene() {
+    this._renderWorld();
+    this._renderChipStack();
     this._renderDice();
   }
 
   update() {
-    this._moveCamera();
+    // this._moveCamera();
+    this._updateChipStack();
     this._updateDice();
   }
 
   collisionFx(itemA, itemB) {
-    if (itemB == "Table") {
+    if (itemB == 'Table') {
       this._settings.shakesCount = 10;
     }
     console.log('collide', itemA, itemB);
@@ -60,6 +74,32 @@ export default class {
 
     this._runSimulation();
     this._throwDice(rollSeed);
+  }
+
+  _createChipStack() {
+    this.chipStacks = [];
+
+    let stack = new SimulationChipStack({
+      position: {x: 100, y: 200},
+      stackSize: 1
+    });
+
+    this.chipStacks.push(stack);
+  }
+
+  _renderChipStack() {
+    _(this.chipStacks).each((stack) => {
+      stack.render({
+        world: this.rollPhysics,
+        stage: this.stage
+      });
+    });
+  }
+
+  _updateChipStack() {
+    _(this.chipStacks).each((stack) => {
+      stack.update();
+    });
   }
 
   _createDice({num, position}) {
@@ -91,7 +131,7 @@ export default class {
     });
   }
 
-  _renderScene() {
+  _renderWorld() {
     return this.rollPhysics.drawScene();
   }
 
@@ -105,26 +145,26 @@ export default class {
     return this.rollPhysics.run();
   }
 
-  _moveCamera() {
-    if(this._settings.shakesCount > 0){
-      let sens = this._settings.shakesCount * this._settings.sensCoef;
+  // _moveCamera() {
+  //   if(this._settings.shakesCount > 0){
+  //     let sens = this._settings.shakesCount * this._settings.sensCoef;
 
-      if(this._settings.shakesCount % 2){
-        this.stage.x += this._settings.shakeX ? sens : 0;
-        this.stage.y += this._settings.shakeY ? sens : 0;
-      }
-      else {
-        this.stage.x -= this._settings.shakeX ? sens : 0;
-        this.stage.y -= this._settings.shakeY ? sens : 0;
-      }
+  //     if(this._settings.shakesCount % 2){
+  //       this.stage.x += this._settings.shakeX ? sens : 0;
+  //       this.stage.y += this._settings.shakeY ? sens : 0;
+  //     }
+  //     else {
+  //       this.stage.x -= this._settings.shakeX ? sens : 0;
+  //       this.stage.y -= this._settings.shakeY ? sens : 0;
+  //     }
 
-      this._settings.shakesCount--;
+  //     this._settings.shakesCount--;
 
-      if(this._settings.shakesCount === 0){
-        this.stage.x = 0;
-        this.stage.y = 0;
-      }
-    }
-  }
+  //     if(this._settings.shakesCount === 0){
+  //       this.stage.x = 0;
+  //       this.stage.y = 0;
+  //     }
+  //   }
+  // }
 
 }

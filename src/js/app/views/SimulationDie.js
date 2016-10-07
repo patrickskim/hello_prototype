@@ -125,7 +125,7 @@ export default class SimulationDie extends EventEmitter {
     this.elapsed = Date.now();
     this.emitter = new PIXI.particles.Emitter(
       container,
-      [PIXI.Texture.fromImage('images/obj_pollen_hd.png')],
+      [ PIXI.loader.resources['particle_img'].texture ],
       DiceProps.Emitter);
     this.emitter.emit = false;
   }
