@@ -48,7 +48,7 @@ export default class SimulationDie extends EventEmitter {
     }
 
     // assumes all frames are available
-    let diceFace = [48, 52, 112, 113, 60,56];
+    let diceFace = [0,21,24,1,45,48];
 
     this.sprite.gotoAndStop(_(diceFace).sample());
     this.emitter.emit = false;
@@ -88,11 +88,12 @@ export default class SimulationDie extends EventEmitter {
   }
 
   _createDiePhysics() {
+    // Note sized down physics box
     return Bodies.rectangle(
       this.position.x,
       this.position.y,
-      DiceProps.Physics.size,
-      DiceProps.Physics.size,
+      DiceProps.Physics.size - 5,
+      DiceProps.Physics.size - 5,
       DiceProps.Physics.options
     );
   }
@@ -101,7 +102,8 @@ export default class SimulationDie extends EventEmitter {
     let die = new PIXI.extras.MovieClip(this._drawDieFrames());
 
     die.anchor.set(0.5, 0.5);
-    die.animationSpeed = 1;
+    die.animationSpeed = 0.75;
+    die.scale.x = die.scale.y = 0.66;
     die.play();
 
     return die;
@@ -109,12 +111,15 @@ export default class SimulationDie extends EventEmitter {
 
   _drawDieFrames() {
     let frames = [];
-    // let randomOffset = _.random(0,6) * 16;
 
-    _(114).times((index)=> {
-      // let num = randomOffset + index + 1;
-      let num = index + 1;
-      frames.push(PIXI.Texture.fromFrame(`d6_roll_${num}`));
+    _(48).times((index)=> {
+      let num = index;
+
+      if (index < 10) {
+        num = `0${num}`;
+      }
+
+      frames.push(PIXI.Texture.fromFrame(`00${num}.png`));
     });
 
     return frames;

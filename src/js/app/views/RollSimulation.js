@@ -29,8 +29,8 @@ export default class {
 
   render() {
     PIXI.loader
-      .add('d6_spritesheet', '/images/d6Sprite.json')
-      .add('particle_img', '/images/obj_pollen_hd.png')
+      .add('d6_spritesheet', '/images/d6Red.json')
+      .add('particle_img', '/images/particle_solid.png')
       .add('chip', '/images/chip.png')
       .load(this.ready);
 
