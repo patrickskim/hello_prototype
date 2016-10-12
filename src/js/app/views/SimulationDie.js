@@ -19,7 +19,7 @@ export default class SimulationDie extends EventEmitter {
     Events.on(this.physics, 'sleepStart', this.detectSleep);
   }
 
-  clear() {
+  leave() {
     // should it leave from the stage?
     Events.off(this.physics);
   }
@@ -34,8 +34,9 @@ export default class SimulationDie extends EventEmitter {
     Body.setAngularVelocity(this.physics, angularVelocity);
 
     this.maxVelocity = this._averageVelocity();
-    this.emitter.emit = true;
+    // this.emitter.emit = true;
     this.state = 'rolling';
+    this.sprite.play();
   }
 
   detectSleep() {
@@ -102,9 +103,9 @@ export default class SimulationDie extends EventEmitter {
     let die = new PIXI.extras.MovieClip(this._drawDieFrames());
 
     die.anchor.set(0.5, 0.5);
-    die.animationSpeed = 0.75;
+    die.animationSpeed = 0.5;
     die.scale.x = die.scale.y = 0.66;
-    die.play();
+    // die.play();
 
     return die;
   }

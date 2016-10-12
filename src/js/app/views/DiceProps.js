@@ -5,7 +5,10 @@ export default {
       label: 'Die',
       frictionAir: 0.025,
       restitution: 0.3,
-      density: 0.07
+      density: 0.07,
+      collisionFilter: {
+        category: 0x0002
+      }
     }
   },
   Emitter: {

@@ -1,138 +1,85 @@
+// PIXI is exposed in the global namespace
+// import PIXI from 'pixi.js';
+import 'pixi-particles'; // Include itself to PIXI
 import _ from 'lodash';
-import { Body, Bodies, Composite, Composites, Constraint, Engine, MouseConstraint, Render, World } from 'matter-js';
+import RollPhysics from './RollPhysics';
+import DiceChain from './DiceChain';
 
-const tableProps = {
-  width: 650,
-  height: 600,
-  borderTop: 80,
-  borderRight: 20,
-  borderBottom: 20,
-  borderLeft: 20,
-};
-
-const tableStyles = {
-  right: {
-    x: tableProps.width- tableProps.borderRight/2,
-    y: tableProps.height/2,
-    width: tableProps.borderRight,
-    height: tableProps.height
-  },
-  bottom: {
-    x: tableProps.width/2,
-    y: tableProps.height,
-    width: tableProps.width - tableProps.borderLeft - tableProps.borderRight,
-    height: tableProps.borderBottom
-  },
-  left: {
-    x: tableProps.borderLeft/2,
-    y: tableProps.height/2,
-    width: tableProps.borderLeft,
-    height: tableProps.height
-  }
-};
-
-export default class ThrowSimulation {
+export default class {
 
   constructor() {
+    this.stage = new PIXI.Container();
+    this.physics = new RollPhysics();
 
-    this.engine = Engine.create({ enableSleeping: true });
-    this.engine.world.gravity = {x: 0, y: 0};
+    this.diceChain = {};
+    this.diceControl = {};
+    this.dice = [];
 
-    this._drawScene();
+    this.ready = this.ready.bind(this);
   }
 
-  render(element) {
-    this.renderer = Render.create({
-      element: element,
-      engine: this.engine,
-      options: {
-        width: tableProps.width,
-        height: tableProps.height,
-        showVelocity: true,
-        showAxes: true
-      }
+  render() {
+    // move the ready render up to the renderer?
+    // Make a manifest thar loops the resources also shareable?
+    PIXI.loader
+      .add('d6_spritesheet', '/images/d6Red.json')
+      .add('particle_img', '/images/particle_solid.png')
+      .load(this.ready);
+
+    return this.stage;
+  }
+
+  ready() {
+    this.setupScene();
+    this.renderScene();
+
+    this._runSimulation();
+  }
+
+  setupScene() {
+    this._createDice({
+      num: 2,
+      position: { x: 450, y: 400 }
     });
   }
 
-  run() {
-    this._enableMouse();
-
-    Engine.run(this.engine);
-
-    if (this.renderer) {
-      Render.run(this.renderer);
-    };
+  renderScene() {
+    this._renderWorld();
+    this._renderDice();
   }
 
-  _drawScene() {
-    let table = this._createTable();
-    let dice = this._createDice(300, 560, 40);
-
-    World.add(this.engine.world, [
-      table.right,
-      table.bottom,
-      table.left,
-      dice
-    ]);
+  update() {
+    this._updateDice();
   }
 
-  _enableMouse() {
-    // add a mouse controlled constraint
-    let mouseConstraint = MouseConstraint.create(this.engine, {
-      element: this.renderer.canvas
+  _createDice({num, position}) {
+    this.diceChain = new DiceChain({ num, position });
+    this.diceComposite = this.diceChain.getDiceComposite();
+    this.diceControl = this.diceChain.getDiceControl();
+
+    window.DC = this.diceChain;
+    this.dice = this.diceChain.getDice();
+  }
+
+  _renderDice() {
+    this.physics.addChild(this.diceComposite);
+    this.stage.addChild(this.diceControl.body);
+
+    _(this.dice).each((die) => {
+      this.stage.addChild(die.body);
     });
-
-    World.add(this.engine.world, mouseConstraint);
-    // pass mouse to renderer to enable showMousePosition
-    this.renderer.mouse = mouseConstraint.mouse;
   }
 
-  _createTable() {
-    return {
-      right : this._createBorder(tableStyles.right),
-      bottom: this._createBorder(tableStyles.bottom),
-      left  : this._createBorder(tableStyles.left),
-    };
+  _updateDice() {
+    return _(this.dice).each((die) => { die.update(); });
   }
 
-  _createBorder(props) {
-    return Bodies.rectangle(
-      props.x, props.y, props.width, props.height, { isStatic: true }
-    );
+  _renderWorld() {
+    return this.physics.drawScene();
   }
 
-  _createDice(x=0, y=0, size=40) {
-    let d1 = this._createDie(x, y, size);
-    let d2 = this._createDie(size *2, y, size);
-    let pivotPoint = this._createPivotPoint(x, y, size);
-    let dice = Composite.create({bodies: [d1, pivotPoint, d2]});
-
-    Composites.chain(dice, 0, 0, 0, 0, { stiffness: 0.2, length: 37 });
-
-    return dice;
-  }
-
-  _createPivotPoint(x, y, radius=40) {
-    let props = {
-      collisionFilter: {
-        mask: 0x0001
-      }
-    };
-
-    return Bodies.circle(x, y, radius, props);
-  }
-
-  _createDie(x=0, y=0, size=40) {
-    let props = {
-      frictionAir: 0.01,
-      // restitution: 0.3,
-      density: 0.01,
-      collisionFilter: {
-        category: 0x0002
-      }
-    };
-
-    return Bodies.rectangle(x, y, size, size, props);
+  _runSimulation() {
+    return this.physics.run();
   }
 
 }

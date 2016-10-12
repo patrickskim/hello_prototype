@@ -10,7 +10,7 @@ export default class {
 
   constructor() {
     this.stage = new PIXI.Container();
-    this.rollPhysics = new RollPhysics();
+    this.physics = new RollPhysics();
 
     this._settings = {
       shakesCount: 0,
@@ -23,7 +23,7 @@ export default class {
 
     this.ready = this.ready.bind(this);
     // this.collisionFx = this.collisionFx.bind(this);
-    // this.rollPhysics.addListener('collision', this.collisionFx);
+    // this.physics.addListener('collision', this.collisionFx);
     window.addEventListener('roll', this.rollDice);
   }
 
@@ -90,7 +90,7 @@ export default class {
   _renderChipStack() {
     _(this.chipStacks).each((stack) => {
       stack.render({
-        world: this.rollPhysics,
+        world: this.physics,
         stage: this.stage
       });
     });
@@ -126,13 +126,13 @@ export default class {
 
   _renderDice() {
     return _(this.dice).each((die) => {
-      this.rollPhysics.addChild(die.physics);
+      this.physics.addChild(die.physics);
       this.stage.addChild(die.body);
     });
   }
 
   _renderWorld() {
-    return this.rollPhysics.drawScene();
+    return this.physics.drawScene();
   }
 
   _throwDice(throwOptions) {
@@ -142,7 +142,7 @@ export default class {
   }
 
   _runSimulation() {
-    return this.rollPhysics.run();
+    return this.physics.run();
   }
 
   // _moveCamera() {
