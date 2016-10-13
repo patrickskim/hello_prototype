@@ -11,7 +11,7 @@ export default class {
     this.stage = new PIXI.Container();
     this.physics = new RollPhysics();
 
-    this.diceChain = {};
+    // this.diceChain = {};
     this.diceControl = {};
     this.dice = [];
 
@@ -71,7 +71,12 @@ export default class {
   }
 
   _updateDice() {
-    return _(this.dice).each((die) => { die.update(); });
+    if (!this.diceChain) {
+      return;
+    }
+
+    this.diceChain.update();
+    // return _(this.dice).each((die) => { die.update(); });
   }
 
   _renderWorld() {

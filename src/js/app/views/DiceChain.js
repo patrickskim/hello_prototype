@@ -32,7 +32,7 @@ export default class DiceChain extends EventEmitter {
   leave() {
     // should it leave from the stage?
     // Events.off(this.physics);
-    _(this.dice).each( (die) => { die.leave() });
+    _(this.dice).each( (die) => { die.leave(); });
   }
 
   move(velocity) {
@@ -40,8 +40,8 @@ export default class DiceChain extends EventEmitter {
   }
 
   update() {
-    // console.log('update chain');
-    return _(this.dice).each((die) => { die.update(); });
+    this._updateControl();
+    this._updateDice();
   }
 
   getDiceComposite() {
@@ -54,6 +54,14 @@ export default class DiceChain extends EventEmitter {
 
   getDice() {
     return this.dice;
+  }
+
+  _updateControl() {
+    // this.diceControl.body.position = this.diceControl.physics.position;
+  }
+
+  _updateDice() {
+    _(this.dice).each((die) => { die.update(); });
   }
 
   _createDiceChain({ numOfDice, diceSize }) {
@@ -115,15 +123,17 @@ export default class DiceChain extends EventEmitter {
       collisionFilter: { mask: 0x0001 }
     };
 
+    let posX = position.x + radius/2;
+
     let graphics = new PIXI.Graphics();
-    // graphics.lineStyle (3 , 0x000000,  1);
-    graphics.beginFill(0x9b59b6); // Purple
-    graphics.drawCircle(position.x + radius/2, position.y, radius);
-    graphics.endFill();
+    graphics.lineStyle (3 , 0x000000,  1);
+    // graphics.beginFill(0x9b59b6); // Purple
+    graphics.drawCircle(posX, position.y, radius);
+    // graphics.endFill();
 
     return {
       body: graphics,
-      physics: Bodies.circle(position.x, position.y, radius, props)
+      physics: Bodies.circle(posX, position.y, radius, props)
     };
   }
 }

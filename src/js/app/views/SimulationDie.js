@@ -6,12 +6,22 @@ import { Body, Bodies, Events } from 'matter-js';
 import { EventEmitter } from 'events';
 import DiceProps from './DiceProps';
 
+const DiceFrames = [0,21,24,1,45,48];
+
+const STATE = {
+  INITIALIZE : 'init',
+  READY      : 'ready',
+  ROLLING    : 'rolling',
+  FINALIZED  : 'final'
+};
+
 export default class SimulationDie extends EventEmitter {
 
   constructor({ position }) {
     super();
 
     this.position = position;
+    this.state = STATE.INITIALIZE;
 
     this._createDie();
 
@@ -34,41 +44,44 @@ export default class SimulationDie extends EventEmitter {
     Body.setAngularVelocity(this.physics, angularVelocity);
 
     this.maxVelocity = this._averageVelocity();
-    // this.emitter.emit = true;
-    this.state = 'rolling';
+    this.emitter.emit = true;
+    this.state = STATE.ROLLING;
     this.sprite.play();
   }
 
   detectSleep() {
+    if (this.isState(STATE.ROLLING)) {
+      this.finalizeDie( _(DiceFrames).sample() );
+    }
+
     return this.emit('sleepStart', this);
   }
 
-  finalizeDie() {
-    if (this.finalized) {
-      return;
-    }
-
-    // assumes all frames are available
-    let diceFace = [0,21,24,1,45,48];
-
-    this.sprite.gotoAndStop(_(diceFace).sample());
+  finalizeDie(num) {
+    this.sprite.gotoAndStop(DiceFrames[num-1]);
     this.emitter.emit = false;
-    this.state = 'final';
+    this.state = STATE.FINALIZED;
+  }
+
+  animate() {
+    return this.sprite.play();
+  }
+
+  isState(state) {
+    return this.state == state;
   }
 
   _createDie() {
     this.physics = this._createDiePhysics();
-
     this.body = new PIXI.Container();
     this.particles = new PIXI.Container();
     this.sprite = this._drawDieSprite();
-
     this.body.addChild(this.particles);
     this.body.addChild(this.sprite);
     this._renderParticles(this.particles);
 
     this.body.position = this.position;
-    this.state = 'ready';
+    this.state = STATE.READY;
   }
 
   _updateDie() {
@@ -76,11 +89,6 @@ export default class SimulationDie extends EventEmitter {
       return;
     }
 
-    if (!this._isMoving()) {
-      this.finalizeDie();
-    }
-
-    // one way data flow for positioning.
     this.position = this.physics.position;
     this.rotation = this.physics.angle;
 
@@ -105,7 +113,7 @@ export default class SimulationDie extends EventEmitter {
     die.anchor.set(0.5, 0.5);
     die.animationSpeed = 0.5;
     die.scale.x = die.scale.y = 0.66;
-    // die.play();
+    die.play();
 
     return die;
   }
@@ -127,13 +135,12 @@ export default class SimulationDie extends EventEmitter {
   }
 
   _renderParticles(container) {
-    // Create a new emitter
     this.elapsed = Date.now();
     this.emitter = new PIXI.particles.Emitter(
       container,
       [ PIXI.loader.resources['particle_img'].texture ],
       DiceProps.Emitter);
-    this.emitter.emit = false;
+    this.emitter.emit = true;
   }
 
   _updateParticles() {
@@ -156,7 +163,7 @@ export default class SimulationDie extends EventEmitter {
   }
 
   _isStationary() {
-    return (this.state == 'final' || this.state == 'ready');
+    return !this.isState(STATE.ROLLING);
   }
 }
 
