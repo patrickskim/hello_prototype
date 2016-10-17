@@ -2,14 +2,14 @@
 // import PIXI from 'pixi.js';
 
 import _ from 'lodash';
-import { Body, Bodies, Events } from 'matter-js';
+import { Body, Bodies, Events, Sleeping } from 'matter-js';
 import { EventEmitter } from 'events';
 import DiceProps from './DiceProps';
 
 const DiceFrames = [0,21,24,1,45,48];
 
 const STATE = {
-  INITIALIZE : 'init',
+  INITIALIZED: 'init',
   READY      : 'ready',
   ROLLING    : 'rolling',
   FINALIZED  : 'final'
@@ -17,16 +17,14 @@ const STATE = {
 
 export default class SimulationDie extends EventEmitter {
 
-  constructor({ position }) {
+  constructor({ position, stage }) {
     super();
 
+    this.parentStage = stage;
     this.position = position;
-    this.state = STATE.INITIALIZE;
+    this.state = STATE.INITIALIZED;
 
     this._createDie();
-
-    this.detectSleep = this.detectSleep.bind(this);
-    Events.on(this.physics, 'sleepStart', this.detectSleep);
   }
 
   leave() {
@@ -36,7 +34,7 @@ export default class SimulationDie extends EventEmitter {
 
   update() {
     this._updateDie();
-    this._updateParticles();
+    this._updateTrail();
   }
 
   throw({ velocity, angularVelocity }) {
@@ -44,22 +42,21 @@ export default class SimulationDie extends EventEmitter {
     Body.setAngularVelocity(this.physics, angularVelocity);
 
     this.maxVelocity = this._averageVelocity();
-    this.emitter.emit = true;
+    this.trail.emit = true;
     this.state = STATE.ROLLING;
     this.sprite.play();
   }
 
-  detectSleep() {
-    if (this.isState(STATE.ROLLING)) {
-      this.finalizeDie( _(DiceFrames).sample() );
+  finalizeDie() {
+    if (!this.isState(STATE.ROLLING)) {
+      return;
     }
 
-    return this.emit('sleepStart', this);
-  }
+    let num = _.random(1,6);
 
-  finalizeDie(num) {
+    Sleeping.set(this.physics, true);
     this.sprite.gotoAndStop(DiceFrames[num-1]);
-    this.emitter.emit = false;
+    this.trail.emit = false;
     this.state = STATE.FINALIZED;
   }
 
@@ -74,19 +71,24 @@ export default class SimulationDie extends EventEmitter {
   _createDie() {
     this.physics = this._createDiePhysics();
     this.body = new PIXI.Container();
-    this.particles = new PIXI.Container();
+
     this.sprite = this._drawDieSprite();
-    this.body.addChild(this.particles);
     this.body.addChild(this.sprite);
-    this._renderParticles(this.particles);
+
+    this._renderTrail(this.parentStage);
 
     this.body.position = this.position;
     this.state = STATE.READY;
   }
 
   _updateDie() {
-    if (this._isStationary()) {
+    if (!this.isState(STATE.ROLLING)) {
       return;
+    }
+
+    if (this._isDoneRolling()) {
+      this.finalizeDie();
+      // console.log("done rolling")
     }
 
     this.position = this.physics.position;
@@ -94,6 +96,8 @@ export default class SimulationDie extends EventEmitter {
 
     this.body.position = this.position;
     this.sprite.rotation = this.rotation;
+
+    this.trail.updateOwnerPos(this.position.x,this.position.y);
   }
 
   _createDiePhysics() {
@@ -122,34 +126,38 @@ export default class SimulationDie extends EventEmitter {
     let frames = [];
 
     _(48).times((index)=> {
-      let num = index;
-
       if (index < 10) {
-        num = `0${num}`;
+        index = `0${index}`;
       }
 
-      frames.push(PIXI.Texture.fromFrame(`00${num}.png`));
+      frames.push(PIXI.Texture.fromFrame(`00${index}.png`));
     });
 
     return frames;
   }
 
-  _renderParticles(container) {
+  _renderTrail(container) {
+    if (!DiceProps.Emitter) {
+      return;
+    }
+
     this.elapsed = Date.now();
-    this.emitter = new PIXI.particles.Emitter(
+    this.trail = new PIXI.particles.Emitter(
       container,
       [ PIXI.loader.resources['particle_img'].texture ],
       DiceProps.Emitter);
-    this.emitter.emit = true;
+
+    this.trail.updateOwnerPos(this.position.x,this.position.y);
+    this.trail.emit = true;
   }
 
-  _updateParticles() {
-    if (!this.emitter) {
+  _updateTrail() {
+    if (!this.trail) {
       return;
     }
 
     let now = Date.now();
-    this.emitter.update((now - this.elapsed) * 0.001);
+    this.trail.update((now - this.elapsed) * 0.001);
     this.elapsed = now;
   }
 
@@ -157,13 +165,13 @@ export default class SimulationDie extends EventEmitter {
     return this._averageVelocity() >= 0.5;
   }
 
+  _isDoneRolling() {
+    return this.isState(STATE.ROLLING) && !this._isMoving();
+  }
+
   _averageVelocity() {
     let velocity = (this.physics.velocity.x + this.physics.velocity.y)/2;
     return Math.floor(Math.abs(velocity));
-  }
-
-  _isStationary() {
-    return !this.isState(STATE.ROLLING);
   }
 }
 

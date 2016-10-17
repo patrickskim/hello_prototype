@@ -4,7 +4,7 @@ export default {
     options: {
       label: 'Die',
       frictionAir: 0.025,
-      restitution: 0.3,
+      restitution: 0.7,
       density: 0.07,
       collisionFilter: {
         category: 0x0002
@@ -13,20 +13,20 @@ export default {
   },
   Emitter: {
     alpha: {
-      start: 0.5,
-      end: 0.0
+      start: 1,
+      end: 1
     },
     scale: {
-      start: 0.4,
-      end: 0.1
+      start: 1,
+      end: 0.05
     },
     color: {
-      start: 'ffffff',
-      end: 'ffffff'
+      start: 'ffea34',
+      end: 'f7c932'
     },
     speed: {
       start: 100,
-      end: 5
+      end: 0
     },
     startRotation: {
       min: 0,
@@ -39,7 +39,7 @@ export default {
     },
     lifetime: {
       min: 0.1,
-      max: 0.8
+      max: 0.5
     },
     frequency: 0.008,
     emitterLifetime: -1,
@@ -48,12 +48,12 @@ export default {
       x: 0,
       y: 0
     },
-    addAtBack: false,
+    addAtBack: true,
     spawnType: 'circle',
     spawnCircle: {
-      x: 6,
+      x: 0,
       y: 0,
-      r: 11
+      r: 10
     }
   }
 };

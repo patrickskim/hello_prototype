@@ -30,7 +30,7 @@ export default class {
   render() {
     PIXI.loader
       .add('d6_spritesheet', '/images/d6Red.json')
-      .add('particle_img', '/images/particle_solid.png')
+      .add('particle_img', '/images/obj_pollen_hd.png')
       .add('chip', '/images/chip.png')
       .load(this.ready);
 
@@ -59,12 +59,12 @@ export default class {
     this._updateDice();
   }
 
-  collisionFx(itemA, itemB) {
-    if (itemB == 'Table') {
-      this._settings.shakesCount = 10;
-    }
-    console.log('collide', itemA, itemB);
-  }
+  // collisionFx(itemA, itemB) {
+  //   if (itemB == 'Table') {
+  //     this._settings.shakesCount = 10;
+  //   }
+  //   console.log('collide', itemA, itemB);
+  // }
 
   rollDice() {
     let rollSeed = {
@@ -117,6 +117,7 @@ export default class {
   _createDie({x, y}) {
     return new SimulationDie({
       position: {x: x, y: y},
+      stage: this.stage
     });
   }
 
