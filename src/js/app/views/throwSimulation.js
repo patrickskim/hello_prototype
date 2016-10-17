@@ -23,7 +23,7 @@ export default class {
     // Make a manifest thar loops the resources also shareable?
     PIXI.loader
       .add('d6_spritesheet', '/images/d6Red.json')
-      .add('particle_img', '/images/particle_solid.png')
+      .add('particle_img', '/images/obj_pollen_hd.png')
       .load(this.ready);
 
     return this.stage;
@@ -39,7 +39,8 @@ export default class {
   setupScene() {
     this._createDice({
       num: 2,
-      position: { x: 450, y: 400 }
+      position: { x: 450, y: 400 },
+      stage: this.stage
     });
   }
 
@@ -52,8 +53,8 @@ export default class {
     this._updateDice();
   }
 
-  _createDice({num, position}) {
-    this.diceChain = new DiceChain({ num, position });
+  _createDice({num, position, stage}) {
+    this.diceChain = new DiceChain({ num, position, stage});
     this.diceComposite = this.diceChain.getDiceComposite();
     this.diceControl = this.diceChain.getDiceControl();
 

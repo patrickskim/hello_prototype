@@ -21,8 +21,8 @@ export default {
       end: 0.05
     },
     color: {
-      start: 'ffea34',
-      end: 'f7c932'
+      start: 'ffffff',
+      end: 'ffea34'
     },
     speed: {
       start: 100,

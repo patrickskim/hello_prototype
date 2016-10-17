@@ -86,7 +86,7 @@ export default class SimulationDie extends EventEmitter {
   }
 
   _updateDie() {
-    if (!this.isState(STATE.ROLLING)) {
+    if (!this.isState(STATE.ROLLING) && !this.isState(STATE.READY)) {
       return;
     }
 

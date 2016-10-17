@@ -12,10 +12,11 @@ const chainProps = {
 
 export default class DiceChain extends EventEmitter {
 
-  constructor({ num, position }) {
+  constructor({ num, position, stage }) {
     super();
 
     this.position = position;
+    this.parentStage = stage;
     this.diceComposite = {};
     this.diceControl = {};
     this.dice = [];
@@ -114,6 +115,7 @@ export default class DiceChain extends EventEmitter {
   _createDie({x, y}) {
     return new SimulationDie({
       position: {x: x, y: y},
+      stage: this.parentStage
     });
   }
 

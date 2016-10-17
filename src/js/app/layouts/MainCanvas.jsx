@@ -24,8 +24,8 @@ export default class MainCanvas extends Component {
     this.gameCanvas.appendChild(view);
 
     // NOTE Wrap this in a function
-    // let sim = ThrowSimulation;
-    let sim = RollSimulation;
+    let sim = ThrowSimulation;
+    // let sim = RollSimulation;
 
     this.renderer.render(sim);
 
