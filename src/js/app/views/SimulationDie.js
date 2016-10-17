@@ -38,6 +38,10 @@ export default class SimulationDie extends EventEmitter {
   }
 
   throw({ velocity, angularVelocity }) {
+    if (!this.isState(STATE.READY)) {
+      return;
+    }
+
     Body.setVelocity(this.physics, velocity);
     Body.setAngularVelocity(this.physics, angularVelocity);
 
