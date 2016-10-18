@@ -2,7 +2,7 @@
 // import PIXI from 'pixi.js';
 import 'pixi-particles'; // Include itself to PIXI
 import _ from 'lodash';
-import RollPhysics from './RollPhysics';
+import SimulationPhysics from './SimulationPhysics';
 import SimulationDie from './SimulationDie';
 import SimulationChipStack from './SimulationChipStack';
 
@@ -10,7 +10,9 @@ export default class {
 
   constructor() {
     this.stage = new PIXI.Container();
-    this.physics = new RollPhysics();
+    this.physics = new SimulationPhysics({
+      table: ['top', 'right', 'left']
+    });
 
     this._settings = {
       shakesCount: 0,

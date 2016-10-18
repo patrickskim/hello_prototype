@@ -445,9 +445,9 @@
 	"app": "http://www.codeandweb.com/texturepacker",
 	"version": "1.0",
 	"image": "d6Red.png",
-	"format": "RGBA8888",
+	"format": "RGBA5555",
 	"size": {"w":111,"h":1215},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:52d419f3a994c194e6789decf7f2639a:9b9f4e93c443267d39d830048e10a2e9:0e3d87b7affd60eb2d11587ab64afabe$"
+	"smartupdate": "$TexturePacker:SmartUpdate:b53879a9ff1341cc981f3a95342e1fe0:bc342b1f0999eabd55b32665fc7dfa49:4532733de79a20421777cdba77c9b79a$"
 }
 }

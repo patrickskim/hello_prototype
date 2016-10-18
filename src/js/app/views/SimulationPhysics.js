@@ -17,14 +17,17 @@ const tableStyles = {
     y: 0,
     width: tableProps.width - tableProps.borderLeft - tableProps.borderRight,
     height: tableProps.borderTop,
-  },
-  right: {
+  }, bottom: {
+    x: tableProps.width/2,
+    y: tableProps.height,
+    width: tableProps.width - tableProps.borderLeft - tableProps.borderRight,
+    height: tableProps.borderTop,
+  }, right: {
     x: tableProps.width- tableProps.borderRight/2,
     y: tableProps.height/2,
     width: tableProps.borderRight,
     height: tableProps.height,
-  },
-  left: {
+  }, left: {
     x: tableProps.borderLeft/2,
     y: tableProps.height/2,
     width: tableProps.borderLeft,
@@ -39,10 +42,12 @@ const rendererProps = {
   showAxes: true
 };
 
-export default class RollPhysics extends EventEmitter {
+export default class SimulationPhysics extends EventEmitter {
 
-  constructor() {
+  constructor({ table }) {
     super();
+
+    this.bodies = table;
     this.engine = Engine.create({ enableSleeping: true });
     this.engine.world.gravity = { x: 0, y: 0 };
 
@@ -91,11 +96,9 @@ export default class RollPhysics extends EventEmitter {
   }
 
   createTable() {
-    return [
-      this.createBorder(tableStyles.top),
-      this.createBorder(tableStyles.right),
-      this.createBorder(tableStyles.left),
-    ];
+    return _(this.bodies).map((side) => {
+      return this.createBorder(tableStyles[side]);
+    }).value();
   }
 
   createBorder({ x, y, width, height }) {

@@ -10,6 +10,8 @@ const chainProps = {
   length: 37
 };
 
+const diceSize = 30;
+
 export default class DiceChain extends EventEmitter {
 
   constructor({ num, position, stage }) {
@@ -17,32 +19,31 @@ export default class DiceChain extends EventEmitter {
 
     this.position = position;
     this.parentStage = stage;
-    this.diceComposite = {};
-    this.diceControl = {};
-    this.dice = [];
 
-    this._createDiceChain({
+    this.dice = this._createDice({
+      position: this.position,
       numOfDice: num,
-      diceSize: 40
+      diceSize: diceSize
     });
 
-    // this.detectSleep = this.detectSleep.bind(this);
-    // Events.on(this.physics, 'sleepStart', this.detectSleep);
+    this.diceComposite = this._createDiceComposite({
+      diceArr: this.dice,
+      diceSize: diceSize
+    });
+
+    Composites.chain(this.diceComposite, 0, 0, 0, 0, chainProps);
   }
 
   leave() {
-    // should it leave from the stage?
-    // Events.off(this.physics);
     _(this.dice).each( (die) => { die.leave(); });
   }
 
-  move(velocity) {
-    Body.setVelocity(this.diceControl.physics, velocity);
+  update() {
+    this._updateDice();
   }
 
-  update() {
-    this._updateControl();
-    this._updateDice();
+  move(newPosition) {
+    Body.setPosition(this.pivotPoint, newPosition);
   }
 
   getDiceComposite() {
@@ -57,32 +58,20 @@ export default class DiceChain extends EventEmitter {
     return this.dice;
   }
 
-  _updateControl() {
-    // this.diceControl.body.position = this.diceControl.physics.position;
-  }
-
   _updateDice() {
     _(this.dice).each((die) => { die.update(); });
   }
 
-  _createDiceChain({ numOfDice, diceSize }) {
-    this.dice = this._createDice({
-      position: this.position,
-      numOfDice: numOfDice,
-      diceSize: diceSize
-    });
-
-    this.diceControl = this._createControlPoint({
+  _createDiceComposite({ diceArr, diceSize }) {
+    this.pivotPoint = this._createPivotPoint({
       position: this.position,
       radius: diceSize
     });
 
-    this.diceComposite = this._createComposite({
-      diceArr: this.dice,
-      pivotPoint: this.diceControl
+    return this._createComposite({
+      diceArr: diceArr,
+      pivotPoint: this.pivotPoint
     });
-
-    Composites.chain(this.diceComposite, 0, 0, 0, 0, chainProps);
   }
 
   _createComposite({ diceArr, pivotPoint }) {
@@ -90,15 +79,20 @@ export default class DiceChain extends EventEmitter {
 
     chainBodies.splice(
       Math.floor(chainBodies.length/2), 0,
-      this.diceControl.physics
+      pivotPoint
     );
 
-    let composite =  Composite.create({
-      name: 'DiceChain',
+    return Composite.create({
+      label: 'DiceChain',
       bodies: chainBodies
     });
+  }
 
-    return composite;
+  _createDie({x, y}) {
+    return new SimulationDie({
+      position: { x: x, y: y } ,
+      stage: this.parentStage
+    });
   }
 
   _createDice({ position, numOfDice, diceSize }) {
@@ -112,30 +106,17 @@ export default class DiceChain extends EventEmitter {
     return dice;
   }
 
-  _createDie({x, y}) {
-    return new SimulationDie({
-      position: {x: x, y: y},
-      stage: this.parentStage
-    });
-  }
-
-  _createControlPoint({ position, radius }) {
+  _createPivotPoint({ position, radius }) {
     let props = {
-      name: 'Control',
+      label: 'PivotPoint',
       collisionFilter: { mask: 0x0001 }
     };
 
-    let posX = position.x + radius/2;
-
-    let graphics = new PIXI.Graphics();
-    graphics.lineStyle (3 , 0x000000,  1);
-    // graphics.beginFill(0x9b59b6); // Purple
-    graphics.drawCircle(posX, position.y, radius);
-    // graphics.endFill();
-
-    return {
-      body: graphics,
-      physics: Bodies.circle(posX, position.y, radius, props)
-    };
+    return Bodies.circle(
+      position.x + radius/2,
+      position.y,
+      radius,
+      props
+    );
   }
 }

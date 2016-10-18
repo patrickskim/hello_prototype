@@ -2,18 +2,16 @@
 // import PIXI from 'pixi.js';
 import 'pixi-particles'; // Include itself to PIXI
 import _ from 'lodash';
-import RollPhysics from './RollPhysics';
+import SimulationPhysics from './SimulationPhysics';
 import DiceChain from './DiceChain';
 
 export default class {
 
   constructor() {
     this.stage = new PIXI.Container();
-    this.physics = new RollPhysics();
-
-    // this.diceChain = {};
-    this.diceControl = {};
-    this.dice = [];
+    this.physics = new SimulationPhysics({
+      table: ['bottom', 'right', 'left']
+    });
 
     this.ready = this.ready.bind(this);
   }
@@ -29,6 +27,10 @@ export default class {
     return this.stage;
   }
 
+  leave() {
+    this.diceControl.off();
+  }
+
   ready() {
     this.setupScene();
     this.renderScene();
@@ -37,15 +39,23 @@ export default class {
   }
 
   setupScene() {
+    let position = { x: 450, y: 400 };
+
     this._createDice({
       num: 2,
-      position: { x: 450, y: 400 },
+      position: position,
       stage: this.stage
+    });
+
+    this._createDiceControl({
+      position: position,
+      radius: 30
     });
   }
 
   renderScene() {
     this._renderWorld();
+    this._renderControl();
     this._renderDice();
   }
 
@@ -53,18 +63,75 @@ export default class {
     this._updateDice();
   }
 
+  onDragStart(event) {
+    this.data = event.data;
+    this.alpha = 0.5;
+    this.dragging = true;
+  }
+
+  onDragEnd() {
+    this.alpha = 1;
+    this.dragging = false;
+    this.data = null;
+  }
+
+  onDragMove() {
+    if (!this.dragging) {
+      return;
+    }
+
+    let newPosition = this.data.getLocalPosition(this.parent);
+
+    this.position = newPosition;
+    this.diceChain.move(newPosition);
+  }
+
   _createDice({num, position, stage}) {
     this.diceChain = new DiceChain({ num, position, stage});
     this.diceComposite = this.diceChain.getDiceComposite();
-    this.diceControl = this.diceChain.getDiceControl();
-
-    window.DC = this.diceChain;
     this.dice = this.diceChain.getDice();
+  }
+
+  _createDiceControl({position, radius}) {
+    this.diceControl = this._createControl({position, radius});
+
+    this.diceControl.diceChain = this.diceChain; //UNHOLY SHIT.
+    this.diceControl.interactive = true;
+    this.diceControl.buttonMode = true;
+
+    // events for drag start
+    this.diceControl
+      .on('mousedown', this.onDragStart)
+      .on('touchstart', this.onDragStart)
+      // events for drag end
+      .on('mouseup', this.onDragEnd)
+      .on('mouseupoutside', this.onDragEnd)
+      .on('touchend', this.onDragEnd)
+      .on('touchendoutside', this.onDragEnd)
+      // events for drag move
+      .on('mousemove', this.onDragMove)
+      .on('touchmove', this.onDragMove);
+  }
+
+  _createControl({ position, radius }) {
+    let controlPoint = new PIXI.Graphics();
+
+    controlPoint.lineStyle (3 , 0x000000,  1);
+    controlPoint.beginFill(0x9b59b6, 0); // Purple
+    controlPoint.drawCircle(0,0, radius);
+    controlPoint.endFill();
+
+    controlPoint.position = { x: position.x + radius/2, y: position.y };
+
+    return controlPoint;
+  }
+
+  _renderControl() {
+    this.stage.addChild(this.diceControl);
   }
 
   _renderDice() {
     this.physics.addChild(this.diceComposite);
-    this.stage.addChild(this.diceControl.body);
 
     _(this.dice).each((die) => {
       this.stage.addChild(die.body);
@@ -77,7 +144,6 @@ export default class {
     }
 
     this.diceChain.update();
-    // return _(this.dice).each((die) => { die.update(); });
   }
 
   _renderWorld() {
