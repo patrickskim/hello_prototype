@@ -70,9 +70,14 @@ export default class {
   }
 
   onDragEnd() {
+    let newVector = this.data.getLocalPosition(this.parent);
+
     this.alpha = 1;
     this.dragging = false;
     this.data = null;
+
+    console.log('end vector', newVector);
+    this.diceChain.throw(newVector);
   }
 
   onDragMove() {

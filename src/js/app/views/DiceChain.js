@@ -46,6 +46,24 @@ export default class DiceChain extends EventEmitter {
     Body.setPosition(this.pivotPoint, newPosition);
   }
 
+  throw(exitPosition) {
+    console.log("init", this.position);
+
+    let delta = {
+      x: this.position.x - exitPosition.x,
+      y: this.position.y - exitPosition.y
+    };
+
+    let rad = Math.atan2(delta.y, delta.x); // In radians
+
+
+    console.log('xit', rad);
+
+    Body.setVelocity(this.pivotPoint, {x: -10, y: -40});
+    Body.setAngularVelocity(this.pivotPoint, rad);
+
+  }
+
   getDiceComposite() {
     return this.diceComposite;
   }
