@@ -21,6 +21,7 @@ export default class {
       sensCoef: 0.5
     };
 
+    // this.stage.position = { x: 200, y: 0 };
     this.rollDice = this.rollDice.bind(this);
 
     this.ready = this.ready.bind(this);

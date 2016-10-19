@@ -1,7 +1,7 @@
 // PIXI is exposed in the global namespace
 // import PIXI from 'pixi.js';
 import _ from 'lodash';
-import { Body, Bodies, Composite, Composites, Events } from 'matter-js';
+import { Body, Bodies, Composite, Composites, Events, Vector } from 'matter-js';
 import { EventEmitter } from 'events';
 import SimulationDie from './SimulationDie';
 
@@ -43,7 +43,12 @@ export default class DiceChain extends EventEmitter {
   }
 
   move(newPosition) {
-    Body.setPosition(this.pivotPoint, newPosition);
+    let o = this.pivotPoint.position;
+    let v = Vector.sub(this.pivotPoint.position, newPosition);
+    console.log("position", o, "vect", v)
+
+    // Body.setPosition(this.pivotPoint, newPosition);
+    // Body.applyForce(this.pivotPoint, {x:0, y:0}, v);
   }
 
   animate() {

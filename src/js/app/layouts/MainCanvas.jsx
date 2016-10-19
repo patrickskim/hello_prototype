@@ -1,8 +1,8 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
 import PixiRenderer from '../views/PixiRenderer';
-import RollSimulation from '../views/RollSimulation';
-import ThrowSimulation from '../views/ThrowSimulation';
+import SimulationRoll from '../views/SimulationRoll';
+import SimulationThrow from '../views/SimulationThrow';
 
 export default class MainCanvas extends Component {
 
@@ -24,8 +24,8 @@ export default class MainCanvas extends Component {
     this.gameCanvas.appendChild(view);
 
     // NOTE Wrap this in a function
-    let sim = ThrowSimulation;
-    // let sim = RollSimulation;
+    let sim = SimulationThrow;
+    // let sim = SimulationRoll;
 
     this.renderer.render(sim);
 
