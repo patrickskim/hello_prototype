@@ -39,7 +39,7 @@ export default class {
   }
 
   setupScene() {
-    let position = { x: 450, y: 400 };
+    let position = { x: 360, y: 400 };
 
     this._createDice({
       num: 2,
@@ -67,6 +67,8 @@ export default class {
     this.data = event.data;
     this.alpha = 0.5;
     this.dragging = true;
+
+    this.diceChain.animate();
   }
 
   onDragEnd() {
@@ -76,8 +78,8 @@ export default class {
     this.dragging = false;
     this.data = null;
 
-    console.log('end vector', newVector);
-    this.diceChain.throw(newVector);
+    this.diceChain.stop();
+    // this.diceChain.throw(newVector);
   }
 
   onDragMove() {

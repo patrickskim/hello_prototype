@@ -46,9 +46,15 @@ export default class DiceChain extends EventEmitter {
     Body.setPosition(this.pivotPoint, newPosition);
   }
 
-  throw(exitPosition) {
-    console.log("init", this.position);
+  animate() {
+    _(this.dice).each( (die) => { die.animate(); });
+  }
 
+  stop() {
+    _(this.dice).each( (die) => { die.stop(); });
+  }
+
+  throw(exitPosition) {
     let delta = {
       x: this.position.x - exitPosition.x,
       y: this.position.y - exitPosition.y

@@ -5,33 +5,34 @@ import { EventEmitter } from 'events';
 const tableProps = {
   width: 650,
   height: 600,
-  borderTop: 80,
-  borderRight: 20,
-  borderBottom: 10,
-  borderLeft: 20,
+  border: 200,
+  scale: 0.9
 };
 
 const tableStyles = {
   top: {
     x: tableProps.width/2,
-    y: 0,
-    width: tableProps.width - tableProps.borderLeft - tableProps.borderRight,
-    height: tableProps.borderTop,
-  }, bottom: {
+    y: -40,
+    width: tableProps.width,
+    height: tableProps.border
+  },
+  right: {
+    x: tableProps.width - (tableProps.border/2 - tableProps.border * tableProps.scale),
+    y: tableProps.height/2,
+    width: tableProps.border,
+    height: tableProps.height
+  },
+  bottom: {
     x: tableProps.width/2,
     y: tableProps.height,
-    width: tableProps.width - tableProps.borderLeft - tableProps.borderRight,
-    height: tableProps.borderTop,
-  }, right: {
-    x: tableProps.width- tableProps.borderRight/2,
+    width: tableProps.width,
+    height: tableProps.border
+  },
+  left: {
+    x: tableProps.border/2 - tableProps.border * tableProps.scale,
     y: tableProps.height/2,
-    width: tableProps.borderRight,
-    height: tableProps.height,
-  }, left: {
-    x: tableProps.borderLeft/2,
-    y: tableProps.height/2,
-    width: tableProps.borderLeft,
-    height: tableProps.height,
+    width: tableProps.border,
+    height: tableProps.height
   }
 };
 

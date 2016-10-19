@@ -45,10 +45,8 @@ export default class SimulationDie extends EventEmitter {
     Body.setVelocity(this.physics, velocity);
     Body.setAngularVelocity(this.physics, angularVelocity);
 
-    this.maxVelocity = this._averageVelocity();
-    this.trail.emit = true;
+    this.animate();
     this.state = STATE.ROLLING;
-    this.sprite.play();
   }
 
   finalizeDie() {
@@ -59,13 +57,24 @@ export default class SimulationDie extends EventEmitter {
     let num = _.random(1,6);
 
     Sleeping.set(this.physics, true);
-    this.sprite.gotoAndStop(DiceFrames[num-1]);
-    this.trail.emit = false;
+    this.stop(num);
+
     this.state = STATE.FINALIZED;
   }
 
   animate() {
-    return this.sprite.play();
+    this.sprite.play();
+    this.trail.emit = true;
+  }
+
+  stop(num) {
+    if (!num) {
+      num = _.random(1,6);
+    }
+
+    this.sprite.gotoAndStop(DiceFrames[num-1]);
+    this.sprite.stop();
+    this.trail.emit = false;
   }
 
   isState(state) {
@@ -92,7 +101,6 @@ export default class SimulationDie extends EventEmitter {
 
     if (this._isDoneRolling()) {
       this.finalizeDie();
-      // console.log("done rolling")
     }
 
     this.position = this.physics.position;
@@ -121,7 +129,9 @@ export default class SimulationDie extends EventEmitter {
     die.anchor.set(0.5, 0.5);
     die.animationSpeed = 0.5;
     die.scale.x = die.scale.y = 0.66;
-    die.play();
+    // die.play();
+    die.gotoAndStop(DiceFrames[_.random(0,5)]);
+
 
     return die;
   }
@@ -152,7 +162,7 @@ export default class SimulationDie extends EventEmitter {
       DiceProps.Emitter);
 
     this.trail.updateOwnerPos(this.position.x,this.position.y);
-    this.trail.emit = true;
+    this.trail.emit = false;
   }
 
   _updateTrail() {
