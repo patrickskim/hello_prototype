@@ -72,14 +72,18 @@ export default class {
   }
 
   onDragEnd() {
-    let newVector = this.data.getLocalPosition(this.parent);
+    let org = { x: 360, y: 400 };
+    let pos = this.data.getLocalPosition(this.parent);
+    let newVector = { x: pos.x - org.x, y: pos.y - org.y};
 
     this.alpha = 1;
     this.dragging = false;
     this.data = null;
 
-    this.diceChain.stop();
-    // this.diceChain.throw(newVector);
+    console.log("new vector", newVector);
+
+    // this.diceChain.stop();
+    this.diceChain.throw(newVector);
   }
 
   onDragMove() {
@@ -88,6 +92,12 @@ export default class {
     }
 
     let newPosition = this.data.getLocalPosition(this.parent);
+
+    // let delta = {
+    //   x: this.position.x - newPosition.x ,
+    //   y: this.position.y - newPosition.y
+    // }
+    // console.log("new", newPosition, "old", this.position, "delta", delta);
 
     this.position = newPosition;
     this.diceChain.move(newPosition);

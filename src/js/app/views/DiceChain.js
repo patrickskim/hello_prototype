@@ -11,6 +11,7 @@ const chainProps = {
 };
 
 const diceSize = 30;
+const throwThreshold = 50;
 
 export default class DiceChain extends EventEmitter {
 
@@ -19,6 +20,7 @@ export default class DiceChain extends EventEmitter {
 
     this.position = position;
     this.parentStage = stage;
+    this.force = { x: 0, y: 0};
 
     this.dice = this._createDice({
       position: this.position,
@@ -42,13 +44,21 @@ export default class DiceChain extends EventEmitter {
     this._updateDice();
   }
 
-  move(newPosition) {
-    let o = this.pivotPoint.position;
-    let v = Vector.sub(this.pivotPoint.position, newPosition);
-    console.log("position", o, "vect", v)
+  move(vector) {
+    // let o = this.pivotPoint.position;
+    // console.log("new force", this.force);
+    if (this.position.y - throwThreshold < vector.y) {
+      Body.setPosition(this.pivotPoint, vector);
 
-    // Body.setPosition(this.pivotPoint, newPosition);
-    // Body.applyForce(this.pivotPoint, {x:0, y:0}, v);
+      return;
+    }
+
+    let v = Vector.sub(this.position, vector);
+    v = Vector.normalise(v);
+    v = Vector.mult(v, 0.05);
+    v = Vector.neg(v);
+    console.log(v)
+    Body.applyForce(this.pivotPoint, {x:0,y:0}, v);
   }
 
   animate() {
@@ -59,19 +69,21 @@ export default class DiceChain extends EventEmitter {
     _(this.dice).each( (die) => { die.stop(); });
   }
 
-  throw(exitPosition) {
-    let delta = {
-      x: this.position.x - exitPosition.x,
-      y: this.position.y - exitPosition.y
-    };
+  throw(vector) {
+    // let v = Vector.normalise(this.position, vector);
+    // v= Vector.neg(v);
+    // Body.applyForce(this.pivotPoint, this.position, v);
 
-    let rad = Math.atan2(delta.y, delta.x); // In radians
+    // let delta = {
+    //   x: this.position.x - vector.x,
+    //   y: this.position.y - vector.y
+    // };
 
+    // let rad = Math.atan2(delta.y, delta.x); // In radians
 
-    console.log('xit', rad);
-
-    Body.setVelocity(this.pivotPoint, {x: -10, y: -40});
-    Body.setAngularVelocity(this.pivotPoint, rad);
+    // Body.setVelocity(this.pivotPoint, vector);
+    // Body.setAngularVelocity(this.pivotPoint, rad);
+    console.log("exit velocity", this.pivotPoint.velocity)
 
   }
 
