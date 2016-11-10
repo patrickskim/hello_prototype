@@ -1,5 +1,5 @@
 // PIXI is exposed in the global namespace
-// import PIXI from 'pixi.js';
+import * as PIXI from 'pixi.js';
 import _ from 'lodash';
 
 export default class PixiRenderer {

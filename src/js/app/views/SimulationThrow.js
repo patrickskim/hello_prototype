@@ -1,7 +1,7 @@
-// PIXI is exposed in the global namespace
-// import PIXI from 'pixi.js';
+import * as PIXI from 'pixi.js';
 import 'pixi-particles'; // Include itself to PIXI
 import _ from 'lodash';
+import { TweenLite } from 'gsap';
 import SimulationPhysics from './SimulationPhysics';
 import DiceChain from './DiceChain';
 
@@ -65,25 +65,26 @@ export default class {
 
   onDragStart(event) {
     this.data = event.data;
-    this.alpha = 0.5;
+    this.alpha = 0.8;
     this.dragging = true;
 
     this.diceChain.animate();
+
+    TweenLite.to(this.scale, 0.8, { x: 2, y: 2, ease: Bounce.easeOut });
+    TweenLite.to(this, 0.2, { alpha: 0.2 });
   }
 
   onDragEnd() {
-    let org = { x: 360, y: 400 };
-    let pos = this.data.getLocalPosition(this.parent);
-    let newVector = { x: pos.x - org.x, y: pos.y - org.y};
-
-    this.alpha = 1;
     this.dragging = false;
     this.data = null;
+    this.diceChain.throw();
 
-    console.log("new vector", newVector);
+    TweenLite.to(this.scale, 0.8, { x: 1, y: 1 });
 
-    // this.diceChain.stop();
-    this.diceChain.throw(newVector);
+    if (Math.abs(this.diceChain.velocity().y) > 5) {
+      this.diceChain.stop();
+      TweenLite.to(this, 0.5, { alpha: 0 });
+    }
   }
 
   onDragMove() {
@@ -91,16 +92,8 @@ export default class {
       return;
     }
 
-    let newPosition = this.data.getLocalPosition(this.parent);
-
-    // let delta = {
-    //   x: this.position.x - newPosition.x ,
-    //   y: this.position.y - newPosition.y
-    // }
-    // console.log("new", newPosition, "old", this.position, "delta", delta);
-
-    this.position = newPosition;
-    this.diceChain.move(newPosition);
+    this.position = this.data.getLocalPosition(this.parent);
+    this.diceChain.move(this.position);
   }
 
   _createDice({num, position, stage}) {

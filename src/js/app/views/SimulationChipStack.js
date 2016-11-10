@@ -1,6 +1,5 @@
 // PIXI is exposed in the global namespace
-// import PIXI from 'pixi.js';
-
+import * as PIXI from 'pixi.js';
 import _ from 'lodash';
 import { Body, Bodies, Events } from 'matter-js';
 import { EventEmitter } from 'events';
@@ -53,5 +52,3 @@ export default class SimulationChipStack extends EventEmitter {
   }
 
 }
-
-

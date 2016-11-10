@@ -1,6 +1,4 @@
-// PIXI is exposed in the global namespace
-// import PIXI from 'pixi.js';
-
+import * as PIXI from 'pixi.js';
 import _ from 'lodash';
 import { Body, Bodies, Events, Sleeping } from 'matter-js';
 import { EventEmitter } from 'events';
@@ -188,5 +186,3 @@ export default class SimulationDie extends EventEmitter {
     return Math.floor(Math.abs(velocity));
   }
 }
-
-

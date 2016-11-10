@@ -1,5 +1,4 @@
-// PIXI is exposed in the global namespace
-// import PIXI from 'pixi.js';
+import * as PIXI from 'pixi.js';
 import 'pixi-particles'; // Include itself to PIXI
 import _ from 'lodash';
 import SimulationPhysics from './SimulationPhysics';

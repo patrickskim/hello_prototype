@@ -1,5 +1,4 @@
-// PIXI is exposed in the global namespace
-// import PIXI from 'pixi.js';
+import * as PIXI from 'pixi.js';
 import _ from 'lodash';
 import { Body, Bodies, Composite, Composites, Events, Vector } from 'matter-js';
 import { EventEmitter } from 'events';
@@ -49,7 +48,6 @@ export default class DiceChain extends EventEmitter {
     // console.log("new force", this.force);
     if (this.position.y - throwThreshold < vector.y) {
       Body.setPosition(this.pivotPoint, vector);
-
       return;
     }
 
@@ -57,8 +55,8 @@ export default class DiceChain extends EventEmitter {
     v = Vector.normalise(v);
     v = Vector.mult(v, 0.05);
     v = Vector.neg(v);
-    console.log(v)
-    Body.applyForce(this.pivotPoint, {x:0,y:0}, v);
+    console.log(v);
+    Body.applyForce(this.pivotPoint, { x:0, y:0 }, v);
   }
 
   animate() {
@@ -69,22 +67,12 @@ export default class DiceChain extends EventEmitter {
     _(this.dice).each( (die) => { die.stop(); });
   }
 
-  throw(vector) {
-    // let v = Vector.normalise(this.position, vector);
-    // v= Vector.neg(v);
-    // Body.applyForce(this.pivotPoint, this.position, v);
+  velocity() {
+    return this.pivotPoint.velocity;
+  }
 
-    // let delta = {
-    //   x: this.position.x - vector.x,
-    //   y: this.position.y - vector.y
-    // };
-
-    // let rad = Math.atan2(delta.y, delta.x); // In radians
-
-    // Body.setVelocity(this.pivotPoint, vector);
-    // Body.setAngularVelocity(this.pivotPoint, rad);
+  throw() {
     console.log("exit velocity", this.pivotPoint.velocity)
-
   }
 
   getDiceComposite() {
