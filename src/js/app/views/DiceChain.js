@@ -10,7 +10,7 @@ const chainProps = {
 };
 
 const diceSize = 30;
-const throwThreshold = 50;
+const throwThreshold = 60;
 
 export default class DiceChain extends EventEmitter {
 
@@ -44,8 +44,6 @@ export default class DiceChain extends EventEmitter {
   }
 
   move(vector) {
-    // let o = this.pivotPoint.position;
-    // console.log("new force", this.force);
     if (this.position.y - throwThreshold < vector.y) {
       Body.setPosition(this.pivotPoint, vector);
       return;
@@ -55,8 +53,8 @@ export default class DiceChain extends EventEmitter {
     v = Vector.normalise(v);
     v = Vector.mult(v, 0.05);
     v = Vector.neg(v);
-    console.log(v);
-    Body.applyForce(this.pivotPoint, { x:0, y:0 }, v);
+
+    Body.applyForce(this.pivotPoint, {x:0,y:0}, v);
   }
 
   animate() {
@@ -65,14 +63,6 @@ export default class DiceChain extends EventEmitter {
 
   stop() {
     _(this.dice).each( (die) => { die.stop(); });
-  }
-
-  velocity() {
-    return this.pivotPoint.velocity;
-  }
-
-  throw() {
-    console.log("exit velocity", this.pivotPoint.velocity)
   }
 
   getDiceComposite() {

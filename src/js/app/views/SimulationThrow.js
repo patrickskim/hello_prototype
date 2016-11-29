@@ -4,16 +4,21 @@ import _ from 'lodash';
 import { TweenLite } from 'gsap';
 import SimulationPhysics from './SimulationPhysics';
 import DiceChain from './DiceChain';
+import DiceControl from './DiceControl';
 
 export default class {
 
   constructor() {
-    this.stage = new PIXI.Container();
+    this.name    = 'SimulationThrow';
+    this.stage   = new PIXI.Container();
     this.physics = new SimulationPhysics({
       table: ['bottom', 'right', 'left']
     });
 
-    this.ready = this.ready.bind(this);
+    this.ready       = this.ready.bind(this);
+    this.onDragStart = this.onDragStart.bind(this);
+    this.onDragMove  = this.onDragMove.bind(this);
+    this.onDragEnd   = this.onDragEnd.bind(this);
   }
 
   render() {
@@ -34,7 +39,6 @@ export default class {
   ready() {
     this.setupScene();
     this.renderScene();
-
     this._runSimulation();
   }
 
@@ -47,10 +51,14 @@ export default class {
       stage: this.stage
     });
 
-    this._createDiceControl({
+    this.diceControl = new DiceControl({
       position: position,
       radius: 30
     });
+
+    this.diceControl.on('dragStart', this.onDragStart);
+    this.diceControl.on('dragMove', this.onDragMove);
+    this.diceControl.on('dragEnd', this.onDragEnd);
   }
 
   renderScene() {
@@ -63,81 +71,29 @@ export default class {
     this._updateDice();
   }
 
-  onDragStart(event) {
-    this.data = event.data;
-    this.alpha = 0.8;
-    this.dragging = true;
-
+  onDragStart() {
+    console.log('starting', arguments);
     this.diceChain.animate();
+  }
 
-    TweenLite.to(this.scale, 0.8, { x: 2, y: 2, ease: Bounce.easeOut });
-    TweenLite.to(this, 0.2, { alpha: 0.2 });
+  onDragMove({diceControl}) {
+    console.log('move', diceControl);
+
+    this.diceChain.move(this.diceControl.position);
   }
 
   onDragEnd() {
-    this.dragging = false;
-    this.data = null;
-    this.diceChain.throw();
-
-    TweenLite.to(this.scale, 0.8, { x: 1, y: 1 });
-
-    if (Math.abs(this.diceChain.velocity().y) > 5) {
-      this.diceChain.stop();
-      TweenLite.to(this, 0.5, { alpha: 0 });
-    }
+    console.log('ending', arguments);
   }
 
-  onDragMove() {
-    if (!this.dragging) {
-      return;
-    }
-
-    this.position = this.data.getLocalPosition(this.parent);
-    this.diceChain.move(this.position);
-  }
-
-  _createDice({num, position, stage}) {
+  _createDice({ num, position, stage }) {
     this.diceChain = new DiceChain({ num, position, stage});
     this.diceComposite = this.diceChain.getDiceComposite();
     this.dice = this.diceChain.getDice();
   }
 
-  _createDiceControl({position, radius}) {
-    this.diceControl = this._createControl({position, radius});
-
-    this.diceControl.diceChain = this.diceChain; //UNHOLY SHIT.
-    this.diceControl.interactive = true;
-    this.diceControl.buttonMode = true;
-
-    // events for drag start
-    this.diceControl
-      .on('mousedown', this.onDragStart)
-      .on('touchstart', this.onDragStart)
-      // events for drag end
-      .on('mouseup', this.onDragEnd)
-      .on('mouseupoutside', this.onDragEnd)
-      .on('touchend', this.onDragEnd)
-      .on('touchendoutside', this.onDragEnd)
-      // events for drag move
-      .on('mousemove', this.onDragMove)
-      .on('touchmove', this.onDragMove);
-  }
-
-  _createControl({ position, radius }) {
-    let controlPoint = new PIXI.Graphics();
-
-    controlPoint.lineStyle (3 , 0x000000,  1);
-    controlPoint.beginFill(0x9b59b6, 0); // Purple
-    controlPoint.drawCircle(0,0, radius);
-    controlPoint.endFill();
-
-    controlPoint.position = { x: position.x + radius/2, y: position.y };
-
-    return controlPoint;
-  }
-
   _renderControl() {
-    this.stage.addChild(this.diceControl);
+    this.stage.addChild(this.diceControl.body);
   }
 
   _renderDice() {
