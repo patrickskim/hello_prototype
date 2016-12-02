@@ -19,6 +19,13 @@ export default class {
     this.onDragStart = this.onDragStart.bind(this);
     this.onDragMove  = this.onDragMove.bind(this);
     this.onDragEnd   = this.onDragEnd.bind(this);
+
+    this.physics.addChild(this.physics.createSensor());
+    this.physics.on('collision', this.detectCollisions);
+  }
+
+  detectCollisions() {
+    console.log('tick', arguments)
   }
 
   render() {

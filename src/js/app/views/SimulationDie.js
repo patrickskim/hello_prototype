@@ -122,7 +122,7 @@ export default class SimulationDie extends EventEmitter {
   }
 
   _drawDieSprite() {
-    let die = new PIXI.extras.MovieClip(this._drawDieFrames());
+    let die = new PIXI.extras.AnimatedSprite(this._drawDieFrames());
 
     die.anchor.set(0.5, 0.5);
     die.animationSpeed = 0.5;

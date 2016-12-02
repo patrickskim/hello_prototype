@@ -106,4 +106,17 @@ export default class SimulationPhysics extends EventEmitter {
     return Bodies.rectangle(x, y, width, height, { label: 'Table', isStatic: true });
   }
 
+  createSensor() {
+    return Bodies.rectangle(
+      tableStyles.top.x,
+      -160,
+      tableStyles.top.width,
+      tableStyles.top.height,
+      {
+        label: 'Sensor',
+        isStatic: true,
+        isSensor: true
+      });
+  }
+
 }
