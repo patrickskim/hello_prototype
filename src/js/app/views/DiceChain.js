@@ -77,6 +77,10 @@ export default class DiceChain extends EventEmitter {
     return this.dice;
   }
 
+  getVelocity() {
+    return this.pivotPoint.velocity;
+  }
+
   _updateDice() {
     _(this.dice).each((die) => { die.update(); });
   }

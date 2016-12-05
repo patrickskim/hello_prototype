@@ -39,10 +39,6 @@ export default class DiceControl extends EventEmitter {
     this.body.destroy();
   }
 
-  completeThrow() {
-    TweenLite.to(this.body, 0.1, { alpha: 0, onComplete: this.leave });
-  }
-
   onDragStart(event) {
     this.data = event.data;
     this.dragging = true;
@@ -56,6 +52,7 @@ export default class DiceControl extends EventEmitter {
     this.data = null;
 
     TweenLite.to(this.body.scale, 0.2, { x: 0.5, y: 0.5 });
+    TweenLite.to(this.body, 0.1, { alpha: 0, onComplete: this.leave });
 
     return this.emit('dragEnd', this);
   }
