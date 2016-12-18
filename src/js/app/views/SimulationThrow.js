@@ -1,60 +1,75 @@
 import * as PIXI from 'pixi.js';
 import 'pixi-particles'; // Include itself to PIXI
 import _ from 'lodash';
+import { EventEmitter } from 'events';
 import { TweenLite } from 'gsap';
 import SimulationPhysics from './SimulationPhysics';
 import DiceChain from './DiceChain';
 import DiceControl from './DiceControl';
 
-export default class {
+export default class SimulationThrow extends EventEmitter {
 
-  constructor() {
+  constructor(options = {}) {
+    super();
+
+    this.parent  = options.parent;
     this.name    = 'SimulationThrow';
     this.stage   = new PIXI.Container();
     this.physics = new SimulationPhysics({
-      table: ['bottom', 'right', 'left']
+      table: ['bottom', 'right', 'left'],
     });
 
-    this.ready       = this.ready.bind(this);
-    this.onDragStart = this.onDragStart.bind(this);
-    this.onDragMove  = this.onDragMove.bind(this);
-    this.onDragEnd   = this.onDragEnd.bind(this);
-    this.detectCollisions = this.detectCollisions.bind(this);
+    // Make this into a array of strings?
+    this.leave       = this.leave.bind(this);
+    this.endThrow = this.endThrow.bind(this);
 
-    this.physics.addChild(this.physics.createSensor());
-    this.physics.on('collision', this.detectCollisions);
+    this.physics.addSensor();
+    this.physics.on('collision', this.endThrow);
   }
 
-  detectCollisions(collisionsArr) {
-    if (!_(collisionsArr).includes('Sensor')) {
-      return;
-    };
+  leave() {
+    this.removeAllListeners();
+    this.physics.leave();
+    this.diceControl.leave();
+    this.stage.removeChildren();
+  }
 
+  endThrow(collision1, collision2) {
+    if (this.thrown) {
+      return;
+    }
+
+    if (!((collision1 == 'Die' || collision2 == 'Die') &&
+      (collision1 == 'Sensor' || collision2 == 'Sensor'))) {
+      return;
+    }
+
+    this.thrown = true;
     console.log('exit velocity', this.diceChain.getVelocity());
+    return this.parent.throw(this.diceChain.getVelocity());
   }
 
   render() {
-    // move the ready render up to the renderer?
-    // Make a manifest thar loops the resources also shareable?
-    PIXI.loader
-      .add('d6_spritesheet', '/images/d6Red.json')
-      .add('particle_img', '/images/obj_pollen_hd.png')
-      .load(this.ready);
+    this._setupScene();
+    this._renderScene();
+    this._runSimulation();
 
     return this.stage;
   }
 
-  leave() {
-    this.diceControl.off();
+  update() {
+    return this._updateDice();
   }
 
-  ready() {
-    this.setupScene();
-    this.renderScene();
-    this._runSimulation();
+  onDragStart() {
+    return this.diceChain.animate();
   }
 
-  setupScene() {
+  onDragMove({diceControl}) {
+    return this.diceChain.move(this.diceControl.position);
+  }
+
+  _setupScene() {
     let position = { x: 360, y: 400 };
 
     this._createDice({
@@ -63,45 +78,35 @@ export default class {
       stage: this.stage
     });
 
-    this.diceControl = new DiceControl({
+    this._createControl({
       position: position,
       radius: 30
     });
-
-    this.diceControl.on('dragStart', this.onDragStart);
-    this.diceControl.on('dragMove', this.onDragMove);
-    this.diceControl.on('dragEnd', this.onDragEnd);
   }
 
-  renderScene() {
+  _renderScene() {
     this._renderWorld();
     this._renderControl();
     this._renderDice();
-  }
-
-  update() {
-    this._updateDice();
-  }
-
-  onDragStart() {
-    console.log('starting', arguments);
-    this.diceChain.animate();
-  }
-
-  onDragMove({diceControl}) {
-    console.log('move', diceControl);
-
-    this.diceChain.move(this.diceControl.position);
-  }
-
-  onDragEnd() {
-    console.log('ending', arguments);
   }
 
   _createDice({ num, position, stage }) {
     this.diceChain = new DiceChain({ num, position, stage});
     this.diceComposite = this.diceChain.getDiceComposite();
     this.dice = this.diceChain.getDice();
+  }
+
+  _createControl({ position, radius}) {
+    this.diceControl = new DiceControl({
+      position: position,
+      radius: radius
+    });
+
+    this.onDragStart = this.onDragStart.bind(this);
+    this.onDragMove  = this.onDragMove.bind(this);
+
+    this.diceControl.on('dragStart', this.onDragStart);
+    this.diceControl.on('dragMove', this.onDragMove);
   }
 
   _renderControl() {

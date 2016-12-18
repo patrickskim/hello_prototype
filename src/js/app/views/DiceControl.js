@@ -35,8 +35,9 @@ export default class DiceControl extends EventEmitter {
   }
 
   leave() {
+    this.removeAllListeners();
     this.body.off();
-    this.body.destroy();
+    // this.body.destroy();
   }
 
   onDragStart(event) {

@@ -36,6 +36,7 @@ export default class DiceChain extends EventEmitter {
   }
 
   leave() {
+    this.removeAllListeners();
     _(this.dice).each( (die) => { die.leave(); });
   }
 

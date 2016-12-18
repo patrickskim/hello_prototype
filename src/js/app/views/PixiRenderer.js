@@ -33,8 +33,8 @@ export default class PixiRenderer {
       return;
     }
 
-    this.scene = new Scene();
-    this.stage.addChild(this.scene.render());
+    this.scene = new Scene({ stage: this.stage });
+    this.scene.render();
     this.animate();
   }
 

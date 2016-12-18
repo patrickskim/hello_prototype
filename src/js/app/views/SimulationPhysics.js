@@ -45,10 +45,10 @@ const rendererProps = {
 
 export default class SimulationPhysics extends EventEmitter {
 
-  constructor({ table }) {
+  constructor(options={}) {
     super();
 
-    this.bodies = table;
+    this.bodies = options.table;
     this.engine = Engine.create({ enableSleeping: true });
     this.engine.world.gravity = { x: 0, y: 0 };
 
@@ -56,8 +56,10 @@ export default class SimulationPhysics extends EventEmitter {
     Events.on(this.engine, 'collisionStart', this.detectCollisions);
   }
 
-  clear() {
-    Events.off(this.engine, 'collisionStart', this.detectCollisions);
+  leave() {
+    this.removeAllListeners();
+    Events.off(this.engine);
+    Engine.clear(this.engine);
   }
 
   render(element) {
@@ -89,6 +91,10 @@ export default class SimulationPhysics extends EventEmitter {
     }
 
     World.add(this.engine.world, [ physicsObj ]);
+  }
+
+  addSensor() {
+    return this.addChild(this.createSensor());
   }
 
   drawScene() {

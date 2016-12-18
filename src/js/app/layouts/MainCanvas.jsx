@@ -1,8 +1,7 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
 import PixiRenderer from '../views/PixiRenderer';
-import SimulationRoll from '../views/SimulationRoll';
-import SimulationThrow from '../views/SimulationThrow';
+import SceneThrow from '../views/SceneThrow';
 
 export default class MainCanvas extends Component {
 
@@ -17,17 +16,11 @@ export default class MainCanvas extends Component {
 
   componentDidMount() {
     let dimensions = this.elDimensions();
-    this.state = dimensions;
-
-    // Get View and add to dom
     let view = this.renderer.view(dimensions);
+
+    this.state = dimensions;
     this.gameCanvas.appendChild(view);
-
-    // NOTE Wrap this in a function
-    let sim = SimulationThrow;
-    // let sim = SimulationRoll;
-
-    this.renderer.render(sim);
+    this.renderer.render(SceneThrow);
 
     window.addEventListener('resize', this.updateDimensions);
   }
