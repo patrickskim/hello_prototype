@@ -2,7 +2,10 @@ import * as PIXI from 'pixi.js';
 import _ from 'lodash';
 import { Body, Bodies, Events, Sleeping } from 'matter-js';
 import { EventEmitter } from 'events';
+import { TweenLite } from 'gsap';
+
 import DiceProps from './DiceProps';
+import ParticleSmoke from '../lib/ParticleSmoke';
 
 const DiceFrames = [0,21,24,1,45,48];
 
@@ -33,6 +36,7 @@ export default class SimulationDie extends EventEmitter {
   update() {
     this._updateDie();
     this._updateTrail();
+    this._updateSmoke();
   }
 
   throw({ velocity, angularVelocity }) {
@@ -58,11 +62,17 @@ export default class SimulationDie extends EventEmitter {
     this.stop(num);
 
     this.state = STATE.FINALIZED;
+    this._bounce();
+    this._renderSmoke(this.body);
+  }
+
+  collide() {
+    this._renderSmoke(this.parentStage);
   }
 
   animate() {
     this.sprite.play();
-    this.trail.emit = true;
+    this._trail.emit = true;
   }
 
   stop(num) {
@@ -72,11 +82,20 @@ export default class SimulationDie extends EventEmitter {
 
     this.sprite.gotoAndStop(DiceFrames[num-1]);
     this.sprite.stop();
-    this.trail.emit = false;
+    this._trail.emit = false;
   }
 
   isState(state) {
     return this.state == state;
+  }
+
+
+  _bounce() {
+    let animation = new TimelineLite();
+
+    animation
+      .to(this.body.scale, 0, { x: 2, y: 2,})
+      .to(this.body.scale, 0.2, { x: 1, y: 1, ease: Bounce.easeOut });
   }
 
   _createDie() {
@@ -107,7 +126,7 @@ export default class SimulationDie extends EventEmitter {
     this.body.position = this.position;
     this.sprite.rotation = this.rotation;
 
-    this.trail.updateOwnerPos(this.position.x,this.position.y);
+    this._trail.updateOwnerPos(this.position.x,this.position.y);
   }
 
   _createDiePhysics() {
@@ -148,29 +167,49 @@ export default class SimulationDie extends EventEmitter {
     return frames;
   }
 
+  _updateSmoke() {
+    if (!this._smoke) {
+      return;
+    }
+
+    let now = Date.now();
+    this._smoke.update((now - this._smokeTime) * 0.001);
+    this._smokeTime = now;
+  }
+
+  _renderSmoke(container) {
+    this._smokeTime = Date.now();
+    this._smoke = new PIXI.particles.Emitter(
+      container,
+      [ PIXI.loader.resources['particle_sol'].texture ],
+      ParticleSmoke);
+
+    // this._smoke.updateOwnerPos(this.position.x,this.position.y);
+  }
+
   _renderTrail(container) {
     if (!DiceProps.Emitter) {
       return;
     }
 
-    this.elapsed = Date.now();
-    this.trail = new PIXI.particles.Emitter(
+    this._elapsed = Date.now();
+    this._trail = new PIXI.particles.Emitter(
       container,
       [ PIXI.loader.resources['particle_img'].texture ],
       DiceProps.Emitter);
 
-    this.trail.updateOwnerPos(this.position.x,this.position.y);
-    this.trail.emit = false;
+    this._trail.updateOwnerPos(this.position.x,this.position.y);
+    this._trail.emit = false;
   }
 
   _updateTrail() {
-    if (!this.trail) {
+    if (!this._trail) {
       return;
     }
 
     let now = Date.now();
-    this.trail.update((now - this.elapsed) * 0.001);
-    this.elapsed = now;
+    this._trail.update((now - this._elapsed) * 0.001);
+    this._elapsed = now;
   }
 
   _isMoving() {

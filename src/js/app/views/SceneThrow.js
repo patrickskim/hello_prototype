@@ -3,11 +3,15 @@ import _ from 'lodash';
 import { EventEmitter } from 'events';
 import SimulationThrow from './SimulationThrow';
 import SimulationRoll from './SimulationRoll';
+import betTypes from '../lib/betTypes';
 
 export default class SceneThrow extends EventEmitter {
 
+
   constructor(options = {}) {
     super();
+
+    console.log('things', betTypes['point_4']);
 
     this.stage = options.stage;
     this.scene = this.simulation({
@@ -28,6 +32,7 @@ export default class SceneThrow extends EventEmitter {
     PIXI.loader
       .add('d6_spritesheet', '/images/d6Red.json')
       .add('particle_img', '/images/obj_pollen_hd.png')
+      .add('particle_sol', '/images/particle_solid.png')
       .add('chip', '/images/chip.png')
       .load(this.ready);
   }
