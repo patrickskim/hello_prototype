@@ -145,7 +145,7 @@ export default class SimulationDie extends EventEmitter {
 
     die.anchor.set(0.5, 0.5);
     die.animationSpeed = 0.5;
-    die.scale.x = die.scale.y = 0.66;
+    die.scale.x = die.scale.y = DiceProps.Physics.size / DiceProps.Sprite.size
     // die.play();
     die.gotoAndStop(DiceFrames[_.random(0,5)]);
 

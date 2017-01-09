@@ -13,12 +13,15 @@ export default class SimulationRoll extends EventEmitter {
 
     this.parent  = options.parent;
 
-    this.name    = 'SimulationRoll';
+    this.name  = 'SimulationRoll';
     this.stage = new PIXI.Container();
     // this.stage.position = { x: 200, y: 0 };
     this.physics = new SimulationPhysics({
       table: ['top', 'right', 'left']
     });
+
+    this.collisionFx = this.collisionFx.bind(this);
+    this.physics.on('collision', this.collisionFx);
 
     this.rollDice = this.rollDice.bind(this);
     this.leave = this.leave.bind(this);
@@ -27,6 +30,7 @@ export default class SimulationRoll extends EventEmitter {
   leave() {
     this.removeAllListeners();
     this.stage.removeChildren();
+    this.physics.leave();
   }
 
   render() {
@@ -49,6 +53,26 @@ export default class SimulationRoll extends EventEmitter {
 
     this._runSimulation();
     this._throwDice(rollSeed);
+  }
+
+  collisionFx(itemA, itemB) {
+    let _collisions = _([itemA, itemB]);
+    if (_collisions.uniq().value().length <= 1 ) { return; }
+    if (!_collisions.includes('Die')) { return; }
+
+    console.log('collision', [itemA,itemB]);
+
+    this._moveCamera();
+  }
+
+  _moveCamera() {
+    let animation = new TimelineLite(),
+      element = this.stage;
+
+    animation
+      .to(element, 0.05, { y: '-=7', ease: Bounce.easeIn })
+      .to(element, 0.05, { y: '+=7', ease: Bounce.easeOut })
+      .to(element, 0.1, { y: 0 });
   }
 
   _setupScene() {
@@ -94,7 +118,8 @@ export default class SimulationRoll extends EventEmitter {
 
     _(num).times( (count) => {
       let offsetX = (count * diceSize) + position.x;
-      this.dice.push(this._createDie({ x: offsetX, y: position.y }));
+      let die = this._createDie({ x: offsetX, y: position.y });
+      this.dice.push(die);
     });
 
     return this.dice;

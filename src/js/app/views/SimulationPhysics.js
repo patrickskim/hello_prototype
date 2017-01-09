@@ -81,6 +81,8 @@ export default class SimulationPhysics extends EventEmitter {
   detectCollisions(event) {
     // NOTE maybe turn this into a sound engine with seperate props?
     _(event.pairs).each((pair) => {
+      if (!pair) { return; }
+      
       this.emit('collision', pair.bodyA.label, pair.bodyB.label);
     });
   }

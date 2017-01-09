@@ -1,4 +1,7 @@
 export default {
+  Sprite: {
+    size: 60
+  },
   Physics: {
     size: 40,
     options: {

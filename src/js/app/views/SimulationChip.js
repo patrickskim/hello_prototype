@@ -7,6 +7,7 @@ const chipProps = {
   width: 30,
   height: 5,
   physics: {
+    label: 'Chip',
     frictionAir: 0.08,
     density: 0.03
   }
