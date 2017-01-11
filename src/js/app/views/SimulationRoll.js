@@ -5,6 +5,7 @@ import { EventEmitter } from 'events';
 import SimulationPhysics from './SimulationPhysics';
 import SimulationDie from './SimulationDie';
 import SimulationChipStack from './SimulationChipStack';
+import { randomNegNum } from '../lib/NumbersUtil';
 
 export default class SimulationRoll extends EventEmitter {
 
@@ -20,11 +21,12 @@ export default class SimulationRoll extends EventEmitter {
       table: ['top', 'right', 'left']
     });
 
+    this._shakeCamera = this._shakeCamera.bind(this);
     this.collisionFx = this.collisionFx.bind(this);
-    this.physics.on('collision', this.collisionFx);
-
     this.rollDice = this.rollDice.bind(this);
     this.leave = this.leave.bind(this);
+
+    this.physics.on('collision', this.collisionFx);
   }
 
   leave() {
@@ -36,6 +38,7 @@ export default class SimulationRoll extends EventEmitter {
   render() {
     this._setupScene();
     this._renderScene();
+    this._moveCamera();
 
     return this.stage;
   }
@@ -55,24 +58,32 @@ export default class SimulationRoll extends EventEmitter {
     this._throwDice(rollSeed);
   }
 
-  collisionFx(itemA, itemB) {
-    let _collisions = _([itemA, itemB]);
-    if (_collisions.uniq().value().length <= 1 ) { return; }
-    if (!_collisions.includes('Die')) { return; }
+  collisionFx(event) {
+    let _collisionPairs = _(event.pairs).map('label');
+    if (!_collisionPairs.includes('Die')) { return; }
+    if (_collisionPairs.uniq().size() == 1 ) { return; }
 
-    console.log('collision', [itemA,itemB]);
-
-    this._moveCamera();
+    this._shakeCamera();
   }
 
+  // move some of these camera things into a util.
   _moveCamera() {
     let animation = new TimelineLite(),
       element = this.stage;
 
     animation
-      .to(element, 0.05, { y: '-=7', ease: Bounce.easeIn })
-      .to(element, 0.05, { y: '+=7', ease: Bounce.easeOut })
-      .to(element, 0.1, { y: 0 });
+      .from(element, 1, { y: -90 })
+      .to(element, 0.2, { y: 0, ease: Back.easeOut });
+  }
+
+  _shakeCamera() {
+    let animation = new TimelineLite(),
+      element = this.stage,
+      random = (Math.random() < 0.5 ? -1 : 1);
+
+    animation
+      .to(element, 0.1, { x: `+=${randomNegNum(5,10)}`, y: `+=${randomNegNum(5,10)}` })
+      .to(element, 0.1, { x: 0, y: 0, ease: Back.easeOut });
   }
 
   _setupScene() {
@@ -119,6 +130,9 @@ export default class SimulationRoll extends EventEmitter {
     _(num).times( (count) => {
       let offsetX = (count * diceSize) + position.x;
       let die = this._createDie({ x: offsetX, y: position.y });
+
+      die.on('endRoll', this._shakeCamera);
+
       this.dice.push(die);
     });
 

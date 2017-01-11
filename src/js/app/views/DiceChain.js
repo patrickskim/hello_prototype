@@ -10,7 +10,7 @@ const chainProps = {
 };
 
 const diceSize = 30;
-const throwThreshold = 60;
+const throwThreshold = 100;
 
 export default class DiceChain extends EventEmitter {
 
@@ -49,6 +49,7 @@ export default class DiceChain extends EventEmitter {
       Body.setPosition(this.pivotPoint, vector);
       return;
     }
+    this.zoom(1);
 
     let v = Vector.sub(this.position, vector);
     v = Vector.normalise(v);
@@ -59,11 +60,23 @@ export default class DiceChain extends EventEmitter {
   }
 
   animate() {
-    _(this.dice).each( (die) => { die.animate(); });
+    _(this.dice).each( (die) => {
+      die.zoom(1.25);
+      die.animate();
+    });
   }
 
   stop() {
-    _(this.dice).each( (die) => { die.stop(); });
+    _(this.dice).each( (die) => {
+      die.bounce();
+      die.stop();
+    });
+  }
+
+  zoom(scale, duration) {
+    _(this.dice).each( (die) => {
+      die.zoom(scale, duration);
+    });
   }
 
   getDiceComposite() {

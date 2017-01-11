@@ -44,18 +44,16 @@ export default class DiceControl extends EventEmitter {
     this.data = event.data;
     this.dragging = true;
 
-    TweenLite.to(this.body.scale, 0.25, { x: 2, y: 2, ease: Back.easeOut });
+    TweenLite.to(this.body.scale, 0.3, { x: 2, y: 2, ease: Bounce.easeOut });
     return this.emit('dragStart', this);
   }
 
   onDragEnd() {
     this.dragging = false;
     this.data = null;
+    this.emit('dragEnd', this);
 
-    TweenLite.to(this.body.scale, 0.2, { x: 0.5, y: 0.5 });
-    TweenLite.to(this.body, 0.1, { alpha: 0, onComplete: this.leave });
-
-    return this.emit('dragEnd', this);
+    TweenLite.to(this.body.scale, 0.3, { x: 1, y: 1, ease: Bounce.easeOut });
   }
 
   onDragMove() {

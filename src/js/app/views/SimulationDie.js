@@ -62,7 +62,8 @@ export default class SimulationDie extends EventEmitter {
     this.stop(num);
 
     this.state = STATE.FINALIZED;
-    this._bounce();
+    this.emit('endRoll');
+    this.bounce();
     this._renderSmoke(this.body);
   }
 
@@ -89,9 +90,16 @@ export default class SimulationDie extends EventEmitter {
     return this.state == state;
   }
 
-
-  _bounce() {
+  zoom(scale=2, duration=0.25) {
     let animation = new TimelineLite();
+
+    animation.to(this.body.scale, duration, { x: scale, y: scale, ease: Back.easeOut });
+  }
+
+  bounce() {
+    let animation = new TimelineLite();
+
+    // this.sprite.tint = 0xFFFFFF;
 
     animation
       .to(this.body.scale, 0, { x: 2, y: 2,})
@@ -145,7 +153,7 @@ export default class SimulationDie extends EventEmitter {
 
     die.anchor.set(0.5, 0.5);
     die.animationSpeed = 0.5;
-    die.scale.x = die.scale.y = DiceProps.Physics.size / DiceProps.Sprite.size
+    die.scale.x = die.scale.y = DiceProps.Physics.size / DiceProps.Sprite.size;
     // die.play();
     die.gotoAndStop(DiceFrames[_.random(0,5)]);
 

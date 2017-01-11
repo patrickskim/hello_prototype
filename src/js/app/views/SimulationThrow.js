@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
 import 'pixi-particles'; // Include itself to PIXI
 import _ from 'lodash';
+import { Howl } from 'howler';
 import { EventEmitter } from 'events';
 import { TweenLite } from 'gsap';
 import SimulationPhysics from './SimulationPhysics';
@@ -11,6 +12,8 @@ export default class SimulationThrow extends EventEmitter {
 
   constructor(options = {}) {
     super();
+
+    this.sound = new Howl({ src: [] });
 
     this.parent  = options.parent;
     this.name    = 'SimulationThrow';
@@ -34,19 +37,15 @@ export default class SimulationThrow extends EventEmitter {
     this.stage.removeChildren();
   }
 
-  endThrow(collision1, collision2) {
-    if (this.thrown) {
-      return;
-    }
+  endThrow(event) {
+    if (this.thrown) { return; }
 
-    if (!((collision1 == 'Die' || collision2 == 'Die') &&
-      (collision1 == 'Sensor' || collision2 == 'Sensor'))) {
-      return;
-    }
+    let _collisionPairs = _(event.pairs).map('label');
+    if (!_collisionPairs.includes('Sensor')) { return; }
 
+    this.diceChain.zoom(5, 0.2);
     this.thrown = true;
-    console.log('exit velocity', this.diceChain.getVelocity());
-    return this.parent.throw(this.diceChain.getVelocity());
+    this.parent.throw(this.diceChain.getVelocity());
   }
 
   render() {
@@ -62,11 +61,17 @@ export default class SimulationThrow extends EventEmitter {
   }
 
   onDragStart() {
-    return this.diceChain.animate();
+    this.diceChain.animate();
   }
 
   onDragMove({diceControl}) {
-    return this.diceChain.move(this.diceControl.position);
+    this.diceChain.move(this.diceControl.position);
+  }
+
+  onDragEnd() {
+    if (this.thrown) { return; }
+
+    this.diceChain.stop();
   }
 
   _setupScene() {
@@ -104,9 +109,11 @@ export default class SimulationThrow extends EventEmitter {
 
     this.onDragStart = this.onDragStart.bind(this);
     this.onDragMove  = this.onDragMove.bind(this);
+    this.onDragEnd   = this.onDragEnd.bind(this);
 
     this.diceControl.on('dragStart', this.onDragStart);
     this.diceControl.on('dragMove', this.onDragMove);
+    this.diceControl.on('dragEnd', this.onDragEnd);
   }
 
   _renderControl() {
