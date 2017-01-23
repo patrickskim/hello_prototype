@@ -30,7 +30,10 @@ export default class SceneThrow extends EventEmitter {
 
   render() {
     PIXI.loader
+      .add('table_head_bg', '/images/table_head_bg.png')
+      .add('table_head_frame', '/images/table_head_frame.png')
       .add('d6_spritesheet', '/images/d6Red.json')
+      .add('smoke_spritesheet', '/images/smoke.json')
       .add('particle_img', '/images/obj_pollen_hd.png')
       .add('particle_sol', '/images/particle_solid.png')
       .add('chip', '/images/chip.png')

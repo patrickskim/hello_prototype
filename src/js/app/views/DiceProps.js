@@ -20,8 +20,8 @@ export default {
       end: 1
     },
     scale: {
-      start: 1,
-      end: 0.05
+      start: 2,
+      end: 0.1
     },
     color: {
       start: 'ffffff',

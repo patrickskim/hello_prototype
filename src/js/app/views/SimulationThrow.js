@@ -1,7 +1,6 @@
 import * as PIXI from 'pixi.js';
 import 'pixi-particles'; // Include itself to PIXI
 import _ from 'lodash';
-import { Howl } from 'howler';
 import { EventEmitter } from 'events';
 import { TweenLite } from 'gsap';
 import SimulationPhysics from './SimulationPhysics';
@@ -12,8 +11,6 @@ export default class SimulationThrow extends EventEmitter {
 
   constructor(options = {}) {
     super();
-
-    this.sound = new Howl({ src: [] });
 
     this.parent  = options.parent;
     this.name    = 'SimulationThrow';

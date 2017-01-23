@@ -6,6 +6,7 @@ import { TweenLite } from 'gsap';
 
 import DiceProps from './DiceProps';
 import ParticleSmoke from '../lib/ParticleSmoke';
+import spriteSmoke from '../lib/SpriteSmoke';
 
 const DiceFrames = [0,21,24,1,45,48];
 
@@ -36,7 +37,6 @@ export default class SimulationDie extends EventEmitter {
   update() {
     this._updateDie();
     this._updateTrail();
-    this._updateSmoke();
   }
 
   throw({ velocity, angularVelocity }) {
@@ -64,11 +64,11 @@ export default class SimulationDie extends EventEmitter {
     this.state = STATE.FINALIZED;
     this.emit('endRoll');
     this.bounce();
-    this._renderSmoke(this.body);
+    this.smoke.play();
   }
 
   collide() {
-    this._renderSmoke(this.parentStage);
+    this.smoke.play();
   }
 
   animate() {
@@ -102,7 +102,7 @@ export default class SimulationDie extends EventEmitter {
     // this.sprite.tint = 0xFFFFFF;
 
     animation
-      .to(this.body.scale, 0, { x: 2, y: 2,})
+      .from(this.body.scale, 0.2, { x: 2, y: 2,})
       .to(this.body.scale, 0.2, { x: 1, y: 1, ease: Bounce.easeOut });
   }
 
@@ -111,8 +111,10 @@ export default class SimulationDie extends EventEmitter {
     this.body = new PIXI.Container();
 
     this.sprite = this._drawDieSprite();
-    this.body.addChild(this.sprite);
+    this.smoke = spriteSmoke();
 
+    this.body.addChild(this.smoke);
+    this.body.addChild(this.sprite);
     this._renderTrail(this.parentStage);
 
     this.body.position = this.position;
@@ -157,7 +159,6 @@ export default class SimulationDie extends EventEmitter {
     // die.play();
     die.gotoAndStop(DiceFrames[_.random(0,5)]);
 
-
     return die;
   }
 
@@ -173,26 +174,6 @@ export default class SimulationDie extends EventEmitter {
     });
 
     return frames;
-  }
-
-  _updateSmoke() {
-    if (!this._smoke) {
-      return;
-    }
-
-    let now = Date.now();
-    this._smoke.update((now - this._smokeTime) * 0.001);
-    this._smokeTime = now;
-  }
-
-  _renderSmoke(container) {
-    this._smokeTime = Date.now();
-    this._smoke = new PIXI.particles.Emitter(
-      container,
-      [ PIXI.loader.resources['particle_sol'].texture ],
-      ParticleSmoke);
-
-    // this._smoke.updateOwnerPos(this.position.x,this.position.y);
   }
 
   _renderTrail(container) {

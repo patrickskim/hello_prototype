@@ -5,7 +5,9 @@ import { EventEmitter } from 'events';
 import SimulationPhysics from './SimulationPhysics';
 import SimulationDie from './SimulationDie';
 import SimulationChipStack from './SimulationChipStack';
-import { randomNegNum } from '../lib/NumbersUtil';
+import { moveCamera, shakeCamera } from '../lib/CameraUtil';
+
+import { Howl } from 'howler';
 
 export default class SimulationRoll extends EventEmitter {
 
@@ -13,33 +15,36 @@ export default class SimulationRoll extends EventEmitter {
     super();
 
     this.parent  = options.parent;
-
     this.name  = 'SimulationRoll';
     this.stage = new PIXI.Container();
-    // this.stage.position = { x: 200, y: 0 };
+    this.table = new PIXI.Container();
+
+    // this._table().position = { x: 200, y: 0 };
     this.physics = new SimulationPhysics({
       table: ['top', 'right', 'left']
     });
 
-    this._shakeCamera = this._shakeCamera.bind(this);
-    this.collisionFx = this.collisionFx.bind(this);
+    this._table().position = { x: 300, y: 500 };
+    this._table().pivot = { x: 300, y: 500 };
+
+    this._collisionFx = this._collisionFx.bind(this);
     this.rollDice = this.rollDice.bind(this);
     this.leave = this.leave.bind(this);
 
-    this.physics.on('collision', this.collisionFx);
+    this.physics.on('collision', this._collisionFx);
   }
 
   leave() {
     this.removeAllListeners();
-    this.stage.removeChildren();
+    this._table().removeChildren();
     this.physics.leave();
   }
 
   render() {
     this._setupScene();
     this._renderScene();
-    this._moveCamera();
 
+    this.stage.addChild(this._table());
     return this.stage;
   }
 
@@ -58,32 +63,20 @@ export default class SimulationRoll extends EventEmitter {
     this._throwDice(rollSeed);
   }
 
-  collisionFx(event) {
-    let _collisionPairs = _(event.pairs).map('label');
-    if (!_collisionPairs.includes('Die')) { return; }
-    if (_collisionPairs.uniq().size() == 1 ) { return; }
-
-    this._shakeCamera();
+  _table() {
+    return this.stage;
   }
 
-  // move some of these camera things into a util.
-  _moveCamera() {
-    let animation = new TimelineLite(),
-      element = this.stage;
+  _collisionFx(event) {
+    let collisionPairs = _(event.pairs).map('label').join('');
 
-    animation
-      .from(element, 1, { y: -90 })
-      .to(element, 0.2, { y: 0, ease: Back.easeOut });
-  }
-
-  _shakeCamera() {
-    let animation = new TimelineLite(),
-      element = this.stage,
-      random = (Math.random() < 0.5 ? -1 : 1);
-
-    animation
-      .to(element, 0.1, { x: `+=${randomNegNum(5,10)}`, y: `+=${randomNegNum(5,10)}` })
-      .to(element, 0.1, { x: 0, y: 0, ease: Back.easeOut });
+    console.log(collisionPairs);
+    switch (collisionPairs) {
+      case 'DieTable':
+        console.log('table bump')
+        shakeCamera(this._table(), 3, 10);
+        break;
+    }
   }
 
   _setupScene() {
@@ -93,18 +86,19 @@ export default class SimulationRoll extends EventEmitter {
 
   _renderScene() {
     this._renderWorld();
+    // this._renderTable();
     this._renderChipStack();
     this._renderDice();
+    this._renderFrame();
   }
 
   _createChipStack() {
-    this.chipStacks = [];
-
     let stack = new SimulationChipStack({
       position: {x: 100, y: 200},
       stackSize: 1
     });
 
+    this.chipStacks = [];
     this.chipStacks.push(stack);
   }
 
@@ -112,7 +106,7 @@ export default class SimulationRoll extends EventEmitter {
     _(this.chipStacks).each((stack) => {
       stack.render({
         world: this.physics,
-        stage: this.stage
+        stage: this._table()
       });
     });
   }
@@ -127,12 +121,11 @@ export default class SimulationRoll extends EventEmitter {
     this.dice = [];
     let diceSize = 40; // Import constants to do this.
 
-    _(num).times( (count) => {
+    _(num).times((count) => {
       let offsetX = (count * diceSize) + position.x;
       let die = this._createDie({ x: offsetX, y: position.y });
 
-      die.on('endRoll', this._shakeCamera);
-
+      // die.on('endRoll', () => { shakeCamera(this._table(), 1, 3); });
       this.dice.push(die);
     });
 
@@ -142,7 +135,7 @@ export default class SimulationRoll extends EventEmitter {
   _createDie({x, y}) {
     return new SimulationDie({
       position: {x: x, y: y},
-      stage: this.stage
+      stage: this._table()
     });
   }
 
@@ -153,12 +146,24 @@ export default class SimulationRoll extends EventEmitter {
   _renderDice() {
     return _(this.dice).each((die) => {
       this.physics.addChild(die.physics);
-      this.stage.addChild(die.body);
+      this._table().addChild(die.body);
     });
   }
 
   _renderWorld() {
     return this.physics.drawScene();
+  }
+
+  _renderFrame() {
+    let table_frame = new PIXI.Sprite(PIXI.loader.resources['table_head_frame'].texture);
+    this._table().addChild(table_frame);
+  }
+
+  _renderTable() {
+    let table = new PIXI.Sprite(PIXI.loader.resources['table_head_bg'].texture);
+
+    // table.position.y = -15;
+    this._table().addChild(table);
   }
 
   _throwDice(throwOptions) {
