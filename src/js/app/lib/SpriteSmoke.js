@@ -4,9 +4,9 @@ export default function SpriteSmoke() {
   let sprite = new PIXI.extras.AnimatedSprite(_drawFrames());
 
   sprite.anchor.set(0.5, 0.5);
-  sprite.scale.x = sprite.scale.y = _.random(10, 20) * .01;
+  sprite.scale.x = sprite.scale.y = .2;
   sprite.rotation = _.random(10,30) * 0.117;
-  sprite.animationSpeed = .75;
+  sprite.animationSpeed = 1;
   sprite.loop = false;
 
   return sprite;

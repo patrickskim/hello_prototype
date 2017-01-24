@@ -24,8 +24,8 @@ export default class SimulationRoll extends EventEmitter {
       table: ['top', 'right', 'left']
     });
 
-    this._table().position = { x: 300, y: 500 };
-    this._table().pivot = { x: 300, y: 500 };
+    this.stage.position = { x: 300, y: 325 };
+    this.stage.pivot = { x: 300, y: 325 };
 
     this._collisionFx = this._collisionFx.bind(this);
     this.rollDice = this.rollDice.bind(this);
@@ -37,14 +37,13 @@ export default class SimulationRoll extends EventEmitter {
   leave() {
     this.removeAllListeners();
     this._table().removeChildren();
+    this.stage.removeChildren();
     this.physics.leave();
   }
 
   render() {
     this._setupScene();
     this._renderScene();
-
-    this.stage.addChild(this._table());
     return this.stage;
   }
 
@@ -64,7 +63,7 @@ export default class SimulationRoll extends EventEmitter {
   }
 
   _table() {
-    return this.stage;
+    return this.table;
   }
 
   _collisionFx(event) {
@@ -74,7 +73,7 @@ export default class SimulationRoll extends EventEmitter {
     switch (collisionPairs) {
       case 'DieTable':
         console.log('table bump')
-        shakeCamera(this._table(), 3, 10);
+        shakeCamera(this.stage, 3, 10);
         break;
     }
   }
@@ -86,10 +85,12 @@ export default class SimulationRoll extends EventEmitter {
 
   _renderScene() {
     this._renderWorld();
-    // this._renderTable();
+    this._renderTableBG();
     this._renderChipStack();
     this._renderDice();
     this._renderFrame();
+
+    this.stage.addChild(this._table());
   }
 
   _createChipStack() {
@@ -119,7 +120,7 @@ export default class SimulationRoll extends EventEmitter {
 
   _createDice({num, position}) {
     this.dice = [];
-    let diceSize = 40; // Import constants to do this.
+    let diceSize = 60; // Import constants to do this.
 
     _(num).times((count) => {
       let offsetX = (count * diceSize) + position.x;
@@ -135,7 +136,7 @@ export default class SimulationRoll extends EventEmitter {
   _createDie({x, y}) {
     return new SimulationDie({
       position: {x: x, y: y},
-      stage: this._table()
+      stage: this._table(),
     });
   }
 
@@ -159,11 +160,9 @@ export default class SimulationRoll extends EventEmitter {
     this._table().addChild(table_frame);
   }
 
-  _renderTable() {
+  _renderTableBG() {
     let table = new PIXI.Sprite(PIXI.loader.resources['table_head_bg'].texture);
-
-    // table.position.y = -15;
-    this._table().addChild(table);
+    this.stage.addChild(table);
   }
 
   _throwDice(throwOptions) {

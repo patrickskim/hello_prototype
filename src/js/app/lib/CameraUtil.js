@@ -15,13 +15,14 @@ function shakeCamera(element, min, max) {
   let animation = new TimelineLite();
   let origin = element.position;
   let amount = _.random(min,max);
-  let rotation = amount * minRadian;
+  let rotation = 5 * minRadian;
 
   console.log('shake', amount);
 
   animation
-    .to(element, 0.3, { y: `+=${amount}`, ease: Elastic.easeIn })
-    .to(element, 0.2, { y: origin.y });
+    .kill()
+    .to(element, 0.3, { rotation: `+=${rotation}`, y: `+=${amount}`, ease: Elastic.easeIn })
+    .to(element, 0.2, { rotation: 0, y: origin.y });
 }
 
 export { moveCamera, shakeCamera };

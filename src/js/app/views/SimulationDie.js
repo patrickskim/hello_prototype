@@ -72,6 +72,7 @@ export default class SimulationDie extends EventEmitter {
   }
 
   animate() {
+    this.sprite.tint = 0xa06d8e;
     this.sprite.play();
     this._trail.emit = true;
   }
@@ -80,6 +81,8 @@ export default class SimulationDie extends EventEmitter {
     if (!num) {
       num = _.random(1,6);
     }
+
+    this.sprite.tint = 0xffffff;
 
     this.sprite.gotoAndStop(DiceFrames[num-1]);
     this.sprite.stop();
@@ -99,20 +102,20 @@ export default class SimulationDie extends EventEmitter {
   bounce() {
     let animation = new TimelineLite();
 
-    // this.sprite.tint = 0xFFFFFF;
-
     animation
-      .from(this.body.scale, 0.2, { x: 2, y: 2,})
-      .to(this.body.scale, 0.2, { x: 1, y: 1, ease: Bounce.easeOut });
+      .to(this.sprite.scale, 0.1, { x: 2, y: 2,})
+      .to(this.sprite.scale, 0.4, { x: 1, y: 1, ease: Back.easeOut });
   }
 
   _createDie() {
     this.physics = this._createDiePhysics();
     this.body = new PIXI.Container();
 
+    this.shadow = this._drawShadow()
     this.sprite = this._drawDieSprite();
     this.smoke = spriteSmoke();
 
+    this.body.addChild(this.shadow);
     this.body.addChild(this.smoke);
     this.body.addChild(this.sprite);
     this._renderTrail(this.parentStage);
@@ -155,8 +158,7 @@ export default class SimulationDie extends EventEmitter {
 
     die.anchor.set(0.5, 0.5);
     die.animationSpeed = 0.5;
-    die.scale.x = die.scale.y = DiceProps.Physics.size / DiceProps.Sprite.size;
-    // die.play();
+    // die.scale.x = die.scale.y = DiceProps.Physics.size / DiceProps.Sprite.size;
     die.gotoAndStop(DiceFrames[_.random(0,5)]);
 
     return die;
@@ -174,6 +176,17 @@ export default class SimulationDie extends EventEmitter {
     });
 
     return frames;
+  }
+
+  _drawShadow() {
+    let shadow = new PIXI.Sprite(PIXI.loader.resources['d6_shadow'].texture);
+
+    shadow.anchor.set(0.5, 0.5);
+    shadow.alpha = 0.3;
+    shadow.scale.x = shadow.scale.y = .8;
+    shadow.position.y = 7;
+
+    return shadow;
   }
 
   _renderTrail(container) {

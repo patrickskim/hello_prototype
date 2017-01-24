@@ -3,7 +3,7 @@ export default {
     size: 60
   },
   Physics: {
-    size: 40,
+    size: 60,
     options: {
       label: 'Die',
       frictionAir: 0.025,
@@ -25,7 +25,7 @@ export default {
     },
     color: {
       start: 'ffffff',
-      end: 'ffea34'
+      end: 'ffffff'
     },
     speed: {
       start: 100,
