@@ -33,7 +33,13 @@ const tableStyles = {
     y: tableProps.height/2,
     width: tableProps.border,
     height: tableProps.height
-  }
+  },
+  foot: {
+    x: tableProps.width/2,
+    y: tableProps.height + 60,
+    width: tableProps.width,
+    height: tableProps.border
+  },
 };
 
 const rendererProps = {

@@ -29,10 +29,10 @@ export default class SimulationRoll extends EventEmitter {
     this.table = new PIXI.Container();
     this.tableForeground = new PIXI.Container();
 
-    this.table.position = { x: 200, y: 150 };
+    this.table.position = { x: 100, y: 100 };
 
     this.physics = new SimulationPhysics({
-      table: ['top', 'right', 'left']
+      table: ['top', 'right', 'foot', 'left']
     });
 
     this._collisionFx = this._collisionFx.bind(this);
@@ -100,7 +100,7 @@ export default class SimulationRoll extends EventEmitter {
   }
 
   _setupScene() {
-    this._createDice({ num: 2, position: { x: 300, y: 600 } });
+    this._createDice({ num: 2, position: { x: 300, y: 540 } });
     this._createChipStack({ stackSize: 1, position: { x: 100, y: 200 } });
   }
 
@@ -179,13 +179,11 @@ export default class SimulationRoll extends EventEmitter {
 
   _renderFrame() {
     let table_frame = new PIXI.Sprite(PIXI.loader.resources['table_head_frame'].texture);
-    table_frame.position.y = -40;
     this._tableFg().addChild(table_frame);
   }
 
   _renderTableBG() {
     let tableBg = new PIXI.Sprite(PIXI.loader.resources['table_head_bg'].texture);
-    tableBg.position.y = -25;
     this.table.addChild(tableBg);
   }
 
