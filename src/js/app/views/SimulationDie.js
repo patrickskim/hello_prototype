@@ -8,6 +8,18 @@ import DiceProps from './DiceProps';
 import ParticleSmoke from '../lib/ParticleSmoke';
 import spriteSmoke from '../lib/SpriteSmoke';
 
+import { Howl } from 'howler';
+
+const SFX = {
+  'diceDown0' : new Howl({ src: ['/audio/bounce_00.mp3'] }),
+  'diceDown1' : new Howl({ src: ['/audio/bounce_01.mp3'] }),
+  'diceRoll'  : new Howl({ src: ['/audio/drag_loop_00.mp3'], loop: true, volume: 0.05 }),
+  'diceFinal0': new Howl({ src: ['/audio/thud_00.mp3'] }),
+  'diceFinal1': new Howl({ src: ['/audio/thud_01.mp3'] }),
+  'dicePuff0' : new Howl({ src: ['/audio/puff_00.mp3'], volume: 0.2 }),
+  'dicePuff1' : new Howl({ src: ['/audio/puff_01.mp3'], volume: 0.2 }),
+};
+
 const DiceFrames = [0,21,24,1,45,48];
 
 const STATE = {
@@ -32,6 +44,7 @@ export default class SimulationDie extends EventEmitter {
   leave() {
     // should it leave from the stage?
     Events.off(this.physics);
+    SFX['diceRoll'].stop();
   }
 
   update() {
@@ -64,6 +77,8 @@ export default class SimulationDie extends EventEmitter {
     this.state = STATE.FINALIZED;
     this.emit('endRoll');
     this.bounce();
+
+    // SFX[`dicePuff${_.random(0,1)}`].play();
     this.smoke.play();
   }
 
@@ -72,9 +87,10 @@ export default class SimulationDie extends EventEmitter {
   }
 
   animate() {
-    this.sprite.tint = 0xa06d8e;
+    this.sprite.tint = 0xc64242;
     this.sprite.play();
     this._trail.emit = true;
+    SFX['diceRoll'].play();
   }
 
   stop(num) {
@@ -87,6 +103,7 @@ export default class SimulationDie extends EventEmitter {
     this.sprite.gotoAndStop(DiceFrames[num-1]);
     this.sprite.stop();
     this._trail.emit = false;
+    SFX['diceRoll'].stop();
   }
 
   isState(state) {
@@ -102,6 +119,12 @@ export default class SimulationDie extends EventEmitter {
   bounce() {
     let animation = new TimelineLite();
 
+    if (this.isState(STATE.FINALIZED)) {
+      SFX[`diceFinal${_.random(0,1)}`].play();
+    } else {
+      SFX[`diceDown${_.random(0,1)}`].play();
+    }
+
     animation
       .to(this.sprite.scale, 0.1, { x: 2, y: 2,})
       .to(this.sprite.scale, 0.4, { x: 1, y: 1, ease: Back.easeOut });
@@ -111,7 +134,7 @@ export default class SimulationDie extends EventEmitter {
     this.physics = this._createDiePhysics();
     this.body = new PIXI.Container();
 
-    this.shadow = this._drawShadow()
+    this.shadow = this._drawShadow();
     this.sprite = this._drawDieSprite();
     this.smoke = spriteSmoke();
 
@@ -147,8 +170,8 @@ export default class SimulationDie extends EventEmitter {
     return Bodies.rectangle(
       this.position.x,
       this.position.y,
-      DiceProps.Physics.size - 5,
-      DiceProps.Physics.size - 5,
+      DiceProps.Physics.size,
+      DiceProps.Physics.size,
       DiceProps.Physics.options
     );
   }
@@ -197,7 +220,7 @@ export default class SimulationDie extends EventEmitter {
     this._elapsed = Date.now();
     this._trail = new PIXI.particles.Emitter(
       container,
-      [ PIXI.loader.resources['particle_img'].texture ],
+      [ PIXI.loader.resources['particle_sol'].texture ],
       DiceProps.Emitter);
 
     this._trail.updateOwnerPos(this.position.x,this.position.y);

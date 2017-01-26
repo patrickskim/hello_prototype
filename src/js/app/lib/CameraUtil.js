@@ -11,18 +11,19 @@ function moveCamera(element, startPoint, endPoint) {
 }
 
 function shakeCamera(element, min, max) {
-  let minRadian = 0.01;
   let animation = new TimelineLite();
-  let origin = element.position;
   let amount = _.random(min,max);
-  let rotation = 5 * minRadian;
-
-  console.log('shake', amount);
+  let easeConfig = {
+    strength: 8,
+    points: 7,
+    template: Linear.easeNone,
+    randomize: false
+  };
 
   animation
-    .kill()
-    .to(element, 0.3, { rotation: `+=${rotation}`, y: `+=${amount}`, ease: Elastic.easeIn })
-    .to(element, 0.2, { rotation: 0, y: origin.y });
+    .fromTo(element, 0.3,
+      { y: `-=${amount}` },
+      { y: `+=${amount}`, ease: RoughEase.ease.config(easeConfig), clearProps: 'y'});
 }
 
 export { moveCamera, shakeCamera };

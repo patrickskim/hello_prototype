@@ -20,7 +20,7 @@ export default {
       end: 1
     },
     scale: {
-      start: 2,
+      start: .75,
       end: 0.1
     },
     color: {
