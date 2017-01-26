@@ -19,7 +19,7 @@ export default class DiceChain extends EventEmitter {
 
     this.position = position;
     this.parentStage = stage;
-    this.force = { x: 0, y: 0};
+    this.force = { x: 0, y: 0 };
 
     this.dice = this._createDice({
       position: this.position,
