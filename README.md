@@ -7,5 +7,8 @@ npm start
 
 goto: http://localhost:4001
 
+# Live PREVIEW
+https://helloprototype-aajmuhtmnn.now.sh
+
 
 ![smashing chips](https://raw.githubusercontent.com/patrickkim/hello_prototype/master/public/dice_throw.gif)
