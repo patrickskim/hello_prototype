@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "brunchy, html and css",
   "scripts": {
-    "start": "brunch watch -s -P 4001",
+    "start": "node index.js",
+    "start:dev": "brunch watch -s -P 4001",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Patrick Kim",
@@ -32,6 +33,7 @@
     "lodash": "^4.17.4",
     "matter-js": "^0.11.0",
     "moment": "^2.17.1",
+    "node-static": "^0.7.9",
     "pixi-particles": "2.0.0",
     "pixi.js": "^4.3.4",
     "react": "^15.4.2",
